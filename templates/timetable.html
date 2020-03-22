@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>создание</h1>
+<form action="" method="post">
+    <table class="table table-sm table-inverse" style="margin-left: 5%; margin-right: auto; max-width: 30%">
+        <thead>
+            <tr class="table-active">
+            <th>емайл</th>
+        </thead>
+        <tbody>
+        {% for item in range(10)%}
+            <tr style="background-color: #dcd0ff">
+                <td><input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Введите адрес почты" name="email" value="email@example.com"></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="table table-sm table-inverse" style="margin-left: 35%; margin-right: auto; max-width: 30%">
+        <thead>
+            <tr class="table-active">
+            <th>емайл</th>
+        </thead>
+        <tbody>
+        {% for item in range(10)%}
+            <tr style="background-color: #dcd0ff">
+                <td><input type="email" class="form-control" id="email1" aria-describedby="emailHelp" placeholder="Введите адрес почты" name="email" value="email@example.com"></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="table table-sm table-inverse" style="margin-left: 65%; margin-right: auto; max-width: 30%">
+        <thead>
+            <tr class="table-active">
+            <th>емайл</th>
+        </thead>
+        <tbody>
+        {% for item in range(10)%}
+            <tr style="background-color: #dcd0ff">
+                <td><input type="email" class="form-control" id="email2" aria-describedby="emailHelp" placeholder="Введите адрес почты" name="email" value="email@example.com"></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+</form>
+{% endblock %}

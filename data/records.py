@@ -32,5 +32,6 @@ class Timetable(SqlAlchemyBase, SerializerMixin):
     vitamin = sqlalchemy.Column(sqlalchemy.Float)
     percent = sqlalchemy.Column(sqlalchemy.Integer,
                                 default=vitamin / NORM * 100)
+    ch_ch_date = sqlalchemy.Column(sqlalchemy.String)
 
     color = sqlalchemy.Column(sqlalchemy.String, default='#ff6666')

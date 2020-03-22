@@ -2,7 +2,8 @@ from flask_restful import abort, Resource, reqparse
 from flask import jsonify
 from data import db_session
 from data.users import User
-# from data.Jobs import Jobs
+from data.records import Timetable
+from data.activity import Activities
 
 import os
 
@@ -96,10 +97,12 @@ class DBResource(Resource):
     def get(self):
         session = db_session.create_session()
         users = session.query(User).all()
-        jobs = session.query(Jobs).all()
+        activities = session.query(Activities).all()
+        timetables = session.query(Timetable).all()
 
         return jsonify({ 'db':{'users': [user.to_dict() for user in users],
-                               'jobs': [job.to_dict() for job in jobs]}})
+                               'timetable': [timetable.to_dict() for timetable in timetables],
+                               'activities': [activity.to_dict() for activity in activities]}})
 
 
 def abort_if_user_not_found(user_id):

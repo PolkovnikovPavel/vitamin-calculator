@@ -5,8 +5,9 @@ from flask import Flask, render_template, redirect, request, abort, jsonify, mak
 from data import db_session
 from data.users import User
 from data.products import Products
+from data.activity import Activities
 from data.records import Timetable, set_color
-# import users_resource
+import users_resource
 
 
 from flask_wtf import FlaskForm
@@ -20,14 +21,7 @@ import os
 import datetime
 
 
-class JobsForm(FlaskForm):   # изменить под рассписание
-    title = StringField('Заголовок задания', validators=[DataRequired()])
-    team_leader = DecimalField('Коммандир команды id', validators=[
-        NumberRange(min=1, message='Должн быть записан id цыфрами')])
-    work_size = DecimalField('Объем работы в часах', validators=[
-        NumberRange(min=1, message='Должно быть записанно цыфрами в часах')])
-    collaborators = StringField('Участники', validators=[DataRequired()])
-    is_finished = BooleanField("Завершино")
+class TimetableForm(FlaskForm):
     submit = SubmitField('Применить')
 
 
@@ -71,10 +65,10 @@ def main():
     # api.add_resource(users_resource.UsersResource, '/api/v2/users/<int:user_id>')
     # api.add_resource(jobs_resource.JobsListResource, '/api/v2/jobs')
     # api.add_resource(jobs_resource.JobsResource, '/api/v2/jobs/<int:job_id>')
-    # api.add_resource(users_resource.DBResource, '/api/v2/db')
+    api.add_resource(users_resource.DBResource, '/api/db')
 
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='127.0.0.1', port=port)
 
 
 @app.route("/")
@@ -87,6 +81,7 @@ def index():
     if len(timetable) > 7:
         timetable = timetable[-7:]
     users = session.query(User).all()
+    activity('main menu')
     return render_template("index.html", timetable=timetable,
                            current_user=current_user, title='Журнал')
 
@@ -145,10 +140,15 @@ def edit_jobs(id):
     return render_template('jobs.html', title='Редактирование работы', form=form)
 
 
-@app.route('/jobs',  methods=['GET', 'POST'])
+@app.route('/timetable',  methods=['GET', 'POST'])
 @login_required
 def add_jobs():
-    form = JobsForm()
+    form = TimetableForm()
+    if request.method == 'GET':
+        return render_template("timetable.html", form=form)
+    else:
+        print(request.form['email'])
+
     if form.validate_on_submit():
         session = db_session.create_session()
 
@@ -172,13 +172,14 @@ def add_jobs():
         session.add(job)
         session.commit()
         return redirect('/')
-    return render_template('jobs.html', title='Добавление работы',
+    return render_template('timetable.html', title='Добавление работы',
                            form=form)
 
 
 @app.route('/logout')
 @login_required
 def logout():
+    activity(f'Sign Out')
     logout_user()
     return redirect("/")
 
@@ -193,6 +194,8 @@ def login():
             user.is_active = True
             login_user(user, remember=form.remember_me.data)
             current_user.is_active = True
+
+            activity(f'logging in with email="{form.email.data}"')
             return redirect("/")
         return render_template('login.html',
                                message="Неправильный логин или пароль",
@@ -227,8 +230,25 @@ def reqister():
         user.is_active = True
         login_user(user, remember=False)
         current_user.is_active = True
+
+        activity(f'new register email"{form.email.data}" name="{form.name.data} {form.surname.data}"')
         return redirect('/')   # возврат на главное меню
     return render_template('register.html', title='Регистрация', form=form)
+
+
+def activity(name=''):
+    session = db_session.create_session()
+    if current_user.is_authenticated:
+        user = current_user.id
+    else:
+        user = 0
+
+    active = Activities(
+        name=name,
+        id_user=user
+    )
+    session.add(active)
+    session.commit()
 
 
 if __name__ == '__main__':
