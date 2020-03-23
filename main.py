@@ -34,7 +34,7 @@ class RegisterForm(FlaskForm):
     is_varfarin = BooleanField('Вы принимаете Варфарин')
     password = PasswordField('Пароль', validators=[DataRequired()])
     password_again = PasswordField('Повторите пароль', validators=[DataRequired()])
-    submit = SubmitField('завершить')
+    submit = SubmitField('Завершить')
 
 
 class LoginForm(FlaskForm):
@@ -145,6 +145,7 @@ def edit_jobs(id):
 def add_jobs():
     form = TimetableForm()
     if request.method == 'GET':
+        activity('main timetable')
         return render_template("timetable.html", form=form)
     else:
         print(request.form['email'])
