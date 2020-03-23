@@ -44,6 +44,10 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Войти')
 
 
+def get_ch_ch_date(date):
+    return f"{date.day}.{date.month}.{date.year}"
+
+
 app = Flask(__name__)
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=1)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -68,7 +72,7 @@ def main():
     api.add_resource(users_resource.DBResource, '/api/db')
 
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='127.0.0.1', port=port)
 
 
 @app.route("/")
@@ -143,38 +147,69 @@ def edit_jobs(id):
 @app.route('/timetable',  methods=['GET', 'POST'])
 @login_required
 def add_jobs():
+    if not current_user.is_authenticated:
+        return redirect('/')
     form = TimetableForm()
     if request.method == 'GET':
+        values = [[('Выбрать', 0) for _ in range(25)] for _ in range(3)]
         activity('main timetable')
-        return render_template("timetable.html", form=form)
+        return render_template("timetable.html", form=form, values=values, title='Внесение блюд')
     else:
-        print(request.form['email'])
+        result_breakfast = []
+        result_dinner = []
+        result_supper = []
+        is_varfarin = False
 
-    if form.validate_on_submit():
+        for tmes_of_day in range(1, 4):
+            for i in range(1, 26):
+                data = (request.form[
+                            f'product_{tmes_of_day}_{i}'], request.form[f'count_{tmes_of_day}_{i}'])
+                if data[0] in list_of_products_with_varfarin:
+                    is_varfarin = True
+
+                if tmes_of_day == 1:
+                    result_breakfast.append(data)
+                elif tmes_of_day == 2:
+                    result_dinner.append(data)
+                else:
+                    result_supper.append(data)
+        vitamin = sum(map(lambda x: float(x[1]), result_breakfast))
+        vitamin += sum(map(lambda x: float(x[1]), result_dinner))
+        vitamin += sum(map(lambda x: float(x[1]), result_supper))
+
+        percent = int((vitamin / NORM * 10000) + 0.5) / 100
+
+        if percent > 135 or percent < 65:
+            color = '#ff6666'
+        elif percent > 115 or percent < 85:
+            color = '#fcf18d'
+        else:
+            color = '#a7d984'
+
+
+
+        date = datetime.datetime.now()
+        ch_ch_date = get_ch_ch_date(date)
+
         session = db_session.create_session()
+        timetable = Timetable(
+            date=date,
+            ch_ch_date=ch_ch_date,
+            percent=percent,
+            vitamin=vitamin,
+            is_varfarin=is_varfarin,
+            master=current_user.id,
+            color=color,
+            breakfast=result_breakfast,
+            dinner=result_dinner,
+            supper=result_supper
+        )
 
-        if not session.query(User).filter(User.id == int(form.team_leader.data)).first():
-            return render_template('jobs.html', title='Добавление работы',
-                                   form=form,
-                                   message='несуществующий id коммандира')
-        job = Jobs()
-        job.job = form.title.data
-        job.team_leader = int(form.team_leader.data)
-        job.work_size = int(form.work_size.data)
-        job.collaborators = form.collaborators.data
-        job.is_finished = form.is_finished.data
-        job.creator = current_user.id
-
-        date_start = datetime.datetime.now()
-        date_end = datetime.datetime.now() + datetime.timedelta(hours=int(form.work_size.data))
-        job.start_date = date_start
-        job.end_date = date_end
-
-        session.add(job)
+        session.add(timetable)
         session.commit()
+
         return redirect('/')
-    return render_template('timetable.html', title='Добавление работы',
-                           form=form)
+
 
 
 @app.route('/logout')
@@ -253,4 +288,7 @@ def activity(name=''):
 
 
 if __name__ == '__main__':
+    list_of_products_with_varfarin = []
+
+
     main()
