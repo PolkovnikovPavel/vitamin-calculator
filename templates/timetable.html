@@ -4,11 +4,13 @@
 <h1 style="text-align: center">Создание расписания блюд на день</h1>
 <form action="" method="post">
     <div class="block" style="margin-left: 5%; display: inline-block;width: 30%">
+
+    <button type="submit" class="btn btn-primary" name="add_button_1">Добавить ячейку</button>
     <table class="table table-sm table-inverse" style="margin-right: auto; max-width: 100%">
         <thead>
             <tr class="table-active">
             <th style="width:73%">Блюдо</th>
-            <th style="width:27%">Вес</th>
+            <th style="width:27%">Вес продукта, гр.</th>
 
         </thead>
         <tbody>
@@ -27,7 +29,7 @@
                     </select>
             </td>
             <td>
-      <input style="background-color: #eebef1" type="number" step="10" min="0" max="5000" name="count_1_{{ loop.index }}" value="{{ item[1] }}">
+      <input style="background-color: #eebef1" type="number" step="1" min="0" max="5000" name="count_1_{{ loop.index }}" value="{{ item[1] }}">
             </td>
             </tr>
         {% endfor %}
@@ -40,11 +42,13 @@
 
 
     <div class="block" style="display: inline-block;width: 30%">
+
+        <button type="submit" class="btn btn-primary" name="add_button_2">Добавить ячейку</button>
     <table class="table table-sm table-inverse" style="margin-right: auto; max-width: 100%">
         <thead>
             <tr class="table-active">
             <th style="width:73%">Блюдо</th>
-            <th style="width:27%">Вес</th>
+            <th style="width:27%">Вес продукта, гр.</th>
 
         </thead>
         <tbody>
@@ -63,7 +67,7 @@
                     </select>
             </td>
             <td>
-      <input style="background-color: #dcd0ff" type="number" step="10" min="0" max="5000" name="count_2_{{ loop.index }}" value="{{ item[1] }}">
+      <input style="background-color: #dcd0ff" type="number" step="1" min="0" max="5000" name="count_2_{{ loop.index }}" value="{{ item[1] }}">
             </td>
             </tr>
         {% endfor %}
@@ -78,11 +82,13 @@
 
 
     <div class="block" style="display: inline-block;width: 30%">
+
+        <button type="submit" class="btn btn-primary" name="add_button_3">Добавить ячейку</button>
     <table class="table table-sm table-inverse" style=" margin-right: auto; max-width: 100%">
         <thead>
             <tr class="table-active">
             <th style="width:73%">Блюдо</th>
-            <th style="width:27%">Вес</th>
+            <th style="width:27%">Вес продукта, гр.</th>
 
         </thead>
         <tbody>
@@ -101,7 +107,7 @@
                     </select>
             </td>
             <td>
-      <input style="background-color: #afdafc" type="number" step="10" min="0" max="5000" name="count_3_{{ loop.index }}" value="{{ item[1] }}">
+      <input style="background-color: #afdafc" type="number" step="1" min="0" max="5000" name="count_3_{{ loop.index }}" value="{{ item[1] }}">
             </td>
             </tr>
         {% endfor %}
@@ -109,7 +115,8 @@
     </table>
     </div>
 
-    <p style="margin-bottom: 40px;margin-left: 5%">{{ form.submit(type="submit", class="btn btn-primary") }}
-    </p>
+    <button style="margin-left: 5%" type="submit" class="btn btn-primary" name="complete">Завершить</button>
+
+
 </form>
 {% endblock %}

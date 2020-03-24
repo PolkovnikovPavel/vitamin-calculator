@@ -22,7 +22,7 @@ import datetime
 
 
 class TimetableForm(FlaskForm):
-    submit = SubmitField('Применить')
+    submit = SubmitField('Завершить')
 
 
 class RegisterForm(FlaskForm):
@@ -90,14 +90,14 @@ def index():
                            current_user=current_user, title='Журнал')
 
 
-@app.route('/jobs_delete/<int:id>', methods=['GET', 'POST'])
+@app.route('/timetable_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
-def jobs_delete(id):
+def timetable_delete(id):
     session = db_session.create_session()
-    jobs = session.query(Jobs).filter(Jobs.id == id,
-                        ((Jobs.creator == current_user.id) | (current_user.id == 1))).first()
-    if jobs:
-        session.delete(jobs)
+    timetable = session.query(Timetable).filter(Timetable.id == id,
+                        (Timetable.master == current_user.id)).first()
+    if timetable:
+        session.delete(timetable)
         session.commit()
     else:
         abort(404)
@@ -146,69 +146,112 @@ def edit_jobs(id):
 
 @app.route('/timetable',  methods=['GET', 'POST'])
 @login_required
-def add_jobs():
+def add_timetable():
     if not current_user.is_authenticated:
         return redirect('/')
-    form = TimetableForm()
+
+    session = db_session.create_session()
     if request.method == 'GET':
-        values = [[('Выбрать', 0) for _ in range(25)] for _ in range(3)]
+        values = [[], [], []]
         activity('main timetable')
-        return render_template("timetable.html", form=form, values=values, title='Внесение блюд')
+
+        date = datetime.datetime.now()  # изменить установку по календарю
+        ch_ch_date = get_ch_ch_date(date)
+        color = set_color(0)
+
+        timetable = Timetable(
+            date=date,
+            ch_ch_date=ch_ch_date,
+            percent=0,
+            vitamin=0,
+            is_varfarin=False,
+            master=current_user.id,
+            color=color,
+            breakfast=[],
+            dinner=[],
+            supper=[]
+        )
+
+        session.add(timetable)
+        session.commit()
+
+        return render_template("timetable.html", values=values, title='Внесение блюд')
     else:
         result_breakfast = []
         result_dinner = []
         result_supper = []
         is_varfarin = False
 
-        for tmes_of_day in range(1, 4):
-            for i in range(1, 26):
+        for i in range(1, 101):
+            try:
                 data = (request.form[
-                            f'product_{tmes_of_day}_{i}'], request.form[f'count_{tmes_of_day}_{i}'])
-                if data[0] in list_of_products_with_varfarin:
-                    is_varfarin = True
+                            f'product_1_{i}'],
+                        request.form[f'count_1_{i}'])
+            except:
+                break
+            if data[0] in list_of_products_with_varfarin:
+                is_varfarin = True
+            result_breakfast.append(data)
 
-                if tmes_of_day == 1:
-                    result_breakfast.append(data)
-                elif tmes_of_day == 2:
-                    result_dinner.append(data)
-                else:
-                    result_supper.append(data)
+        for i in range(1, 101):
+            try:
+                data = (request.form[
+                            f'product_2_{i}'],
+                        request.form[f'count_2_{i}'])
+            except:
+                break
+            if data[0] in list_of_products_with_varfarin:
+                is_varfarin = True
+            result_dinner.append(data)
+
+        for i in range(1, 101):
+            try:
+                data = (request.form[
+                            f'product_3_{i}'],
+                        request.form[f'count_3_{i}'])
+            except:
+                break
+            if data[0] in list_of_products_with_varfarin:
+                is_varfarin = True
+            result_supper.append(data)
+
         vitamin = sum(map(lambda x: float(x[1]), result_breakfast))
         vitamin += sum(map(lambda x: float(x[1]), result_dinner))
         vitamin += sum(map(lambda x: float(x[1]), result_supper))
 
         percent = int((vitamin / NORM * 10000) + 0.5) / 100
+        color = set_color(percent)
 
-        if percent > 135 or percent < 65:
-            color = '#ff6666'
-        elif percent > 115 or percent < 85:
-            color = '#fcf18d'
-        else:
-            color = '#a7d984'
-
-
-
-        date = datetime.datetime.now()
+        date = datetime.datetime.now()   # изменить установку по календарю
         ch_ch_date = get_ch_ch_date(date)
 
-        session = db_session.create_session()
-        timetable = Timetable(
-            date=date,
-            ch_ch_date=ch_ch_date,
-            percent=percent,
-            vitamin=vitamin,
-            is_varfarin=is_varfarin,
-            master=current_user.id,
-            color=color,
-            breakfast=result_breakfast,
-            dinner=result_dinner,
-            supper=result_supper
-        )
+        timetable = session.query(Timetable).filter(Timetable.master == current_user.id).all()
+        timetable = timetable[-1]
 
-        session.add(timetable)
+        timetable.date = date
+        timetable.ch_ch_date = ch_ch_date
+        timetable.percent = percent
+        timetable.vitamin = vitamin
+        timetable.is_varfarin = is_varfarin
+        timetable.color = color
+        timetable.breakfast = result_breakfast
+        timetable.dinner = result_dinner
+        timetable.supper = result_supper
+
         session.commit()
 
-        return redirect('/')
+        if 'complete' in request.form:
+            return redirect('/')
+
+        if 'add_button_1' in request.form:
+            result_breakfast.append(('Выбрать', 0))
+        if 'add_button_2' in request.form:
+            result_dinner.append(('Выбрать', 0))
+        if 'add_button_3' in request.form:
+            result_supper.append(('Выбрать', 0))
+
+        values = [result_breakfast, result_dinner, result_supper]
+        return render_template("timetable.html", values=values, title='Внесение блюд')
 
 
 

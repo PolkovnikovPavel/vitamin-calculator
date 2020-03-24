@@ -20,7 +20,7 @@
       <th style="width:35%">Дата</th>
       <th style="width:20%">витамин К, мл.г</th>
       <th style="width:20%">% от нормы</th>
-      <th style="width:25%">угроза от "Варфарина"</th>
+      <th style="width:25%">угроза при приминении "Варфарина"</th>
     </tr>
   </thead>
   <tbody>
@@ -44,7 +44,7 @@
 </table>
     <div>
       <a href="/jobs/{{ item.id }}" class="btn btn-warning" style="margin-left: 10%">Изменить</a>
-      <a href="/jobs_delete/{{ item.id }}" class="btn btn-danger">Удалить</a>
+      <a href="/timetable_delete/{{ item.id }}" class="btn btn-danger">Удалить</a>
     </div>
 {% endfor %}
 {% endblock %}

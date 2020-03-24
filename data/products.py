@@ -10,5 +10,7 @@ class Products(SqlAlchemyBase, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String)
-    vitamin = sqlalchemy.Column(sqlalchemy.Integer)
+    vitamin = sqlalchemy.Column(sqlalchemy.Float)
+    type = sqlalchemy.Column(sqlalchemy.Integer,
+                               sqlalchemy.ForeignKey("types.id"))
     is_varfarin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)

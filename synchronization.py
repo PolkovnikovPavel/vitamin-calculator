@@ -55,17 +55,17 @@ for activity in activities:
 for timetable in timetables:
     if not session.query(Timetable).get(timetable['id']):
         timetable_db = Timetable(
-            breakfast=user['breakfast'],
-            dinner=user['dinner'],
-            supper=user['supper'],
-            master=user['master'],
-            vitamin=user['vitamin'],
-            id=user['id'],
-            date=pars_str_to_date(user['date']),
-            is_varfarin=user['is_varfarin'],
-            percent=user['percent'],
-            ch_ch_date=user['ch_ch_date'],
-            color=user['color']
+            breakfast=timetable['breakfast'],
+            dinner=timetable['dinner'],
+            supper=timetable['supper'],
+            master=timetable['master'],
+            vitamin=timetable['vitamin'],
+            id=timetable['id'],
+            date=pars_str_to_date(timetable['date']),
+            is_varfarin=timetable['is_varfarin'],
+            percent=timetable['percent'],
+            ch_ch_date=timetable['ch_ch_date'],
+            color=timetable['color']
                         )
         session.add(timetable_db)
 
