@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="text-align: center">Обзор расписания блюд на день</h1>
+<form action="" method="post">
+
+    <div class="form-group" style="width: 20%;margin-left: 5%">
+        <label for="inputDate">Дата:</label>
+        <input type="date" name="date" value="{{ date }}" min="{{ date }}" max="{{ date }}" class="form-control">
+    </div>
+
+    <div class="block" style="margin-left: 5%; display: inline-block;width: 30%">
+
+    <table class="table table-sm table-inverse" style="margin-right: auto; max-width: 100%">
+        <thead>
+            <tr class="table-active">
+            <th style="width:73%">Блюдо</th>
+            <th style="width:27%">Вес продукта, гр.</th>
+
+        </thead>
+        <tbody>
+        <tr style="background-color: #eebef1">
+            <td colspan="2" style="text-align: center">Завтрак</td>
+        </tr>
+        {% for item in values[0] %}
+            <tr style="background-color: #eebef1">
+            <td>
+                    <select name="product_1_{{ loop.index }}" style="background-color: #eebef1" class="form-control">
+      <option>{{ item[0] }}</option>
+        {% for product in products %}
+            <option>{{ product }}</option>
+        {% endfor %}
+                    </select>
+            </td>
+            <td>
+      <input style="background-color: #eebef1" type="number" step="1" min="{{ item[1] }}" max="{{ item[1] }}" name="count_1_{{ loop.index }}" value="{{ item[1] }}">
+            </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+
+    <div class="block" style="display: inline-block;width: 30%">
+
+    <table class="table table-sm table-inverse" style="margin-right: auto; max-width: 100%">
+        <thead>
+            <tr class="table-active">
+            <th style="width:73%">Блюдо</th>
+            <th style="width:27%">Вес продукта, гр.</th>
+
+        </thead>
+        <tbody>
+        <tr style="background-color: #dcd0ff">
+            <td colspan="2" style="text-align: center">Обед</td>
+        </tr>
+        {% for item in values[1] %}
+            <tr style="background-color: #dcd0ff">
+            <td>
+                    <select name="product_2_{{ loop.index }}" style="background-color: #dcd0ff" class="form-control">
+      <option>{{ item[0] }}</option>
+        {% for product in products %}
+            <option>{{ product }}</option>
+        {% endfor %}
+                    </select>
+            </td>
+            <td>
+      <input style="background-color: #dcd0ff" type="number" step="1" min="{{ item[1] }}" max="{{ item[1] }}" name="count_2_{{ loop.index }}" value="{{ item[1] }}">
+            </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+
+    <div class="block" style="display: inline-block;width: 30%">
+
+    <table class="table table-sm table-inverse" style=" margin-right: auto; max-width: 100%">
+        <thead>
+            <tr class="table-active">
+            <th style="width:73%">Блюдо</th>
+            <th style="width:27%">Вес продукта, гр.</th>
+
+        </thead>
+        <tbody>
+        <tr style="background-color: #afdafc">
+            <td colspan="2" style="text-align: center">Ужин</td>
+        </tr>
+        {% for item in values[2] %}
+            <tr style="background-color: #afdafc">
+            <td>
+                    <select name="product_3_{{ loop.index }}" style="background-color: #afdafc" class="form-control">
+      <option>{{ item[0] }}</option>
+        {% for product in products %}
+            <option>{{ product }}</option>
+        {% endfor %}
+                    </select>
+            </td>
+            <td>
+      <input style="background-color: #afdafc" type="number" step="1" min="{{ item[1] }}" max="{{ item[1] }}" name="count_3_{{ loop.index }}" value="{{ item[1] }}">
+            </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    <button style="margin-left: 5%" type="submit" class="btn btn-primary" name="complete">Вернуться</button>
+
+</form>
+{% endblock %}

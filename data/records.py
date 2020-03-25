@@ -8,10 +8,14 @@ NORM = 50
 
 
 def set_color(percent=100):
-    if percent > 122 or percent < 78:
-        col = '#ff6666'
-    elif percent > 113 or percent < 87:
-        col = '#fcf18d'
+    if percent > 128 or percent < 72:
+        col = '#e66761'
+    elif percent > 121 or percent < 79:
+        col = '#ff9980 '
+    elif percent > 115 or percent < 85:
+        col = '#fcf0b3'
+    elif percent > 107 or percent < 93:
+        col = '#c9dc87'
     else:
         col = '#a7d984'
     return col
@@ -33,5 +37,6 @@ class Timetable(SqlAlchemyBase, SerializerMixin):
     percent = sqlalchemy.Column(sqlalchemy.Integer,
                                 default=vitamin / NORM * 100)
     ch_ch_date = sqlalchemy.Column(sqlalchemy.String)
+    summ = sqlalchemy.Column(sqlalchemy.Integer)
 
     color = sqlalchemy.Column(sqlalchemy.String, default='#ff6666')

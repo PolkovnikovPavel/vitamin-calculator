@@ -49,6 +49,19 @@ def get_ch_ch_date(date):
     return f"{day}.{month}.{year}"
 
 
+def get_num_of_day(date):
+    year, month, day = date.split('-')
+    num = int(year) * 365
+    num += int(month) * 30
+    if int(day) == 30:
+        num += 29.5
+    elif int(day) == 31:
+        num += 29.9
+    else:
+        num += int(day)
+    return num
+
+
 app = Flask(__name__)
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=1)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -91,9 +104,11 @@ def index():
         timetable = session.query(Timetable).filter(Timetable.master == current_user.id).all()
     else:
         timetable = []
+
+    timetable.sort(key=lambda x: get_num_of_day(x.date), reverse=True)
     if len(timetable) > 7:
-        timetable = timetable[-7:]
-    users = session.query(User).all()
+        timetable = timetable[:7]
+
     activity('main menu')
     return render_template("index.html", timetable=timetable,
                            current_user=current_user, title='Журнал')
@@ -108,9 +123,34 @@ def timetable_delete(id):
     if timetable:
         session.delete(timetable)
         session.commit()
+        activity(f'delete timetable, id - {timetable.id}')
     else:
         abort(404)
     return redirect('/')
+
+
+@app.route('/look_timetable/<int:id>', methods=['GET', 'POST'])
+@login_required
+def look_timetable(id):
+    if not current_user.is_authenticated:
+        return redirect('/')
+
+    session = db_session.create_session()
+    timetable = session.query(Timetable).filter(Timetable.id == id,
+                                (Timetable.master == current_user.id)).first()
+    if request.method == "GET":
+        result_breakfast = timetable.breakfast
+        result_dinner = timetable.dinner
+        result_supper = timetable.supper
+        date=timetable.date
+
+        values = [result_breakfast, result_dinner, result_supper]
+
+        return render_template("look_timetable.html", values=values,
+                               title='Просмотр блюд', date=date)
+
+    else:
+        return redirect('/')
 
 
 @app.route('/timetable/<int:id>', methods=['GET', 'POST'])
@@ -132,7 +172,7 @@ def edit_timetable(id):
         products = list(map(lambda x: f'{x.name} ({x.vitamin}мл.гр/100гр)', list_of_products))
         products.sort()
 
-        return render_template("timetable.html", values=values,
+        return render_template("timetable.html", values=values, products=products,
                                title='Внесение блюд', date=date)
 
     else:
@@ -140,6 +180,7 @@ def edit_timetable(id):
         result_dinner = []
         result_supper = []
         is_varfarin = False
+        summ = 0
 
         for i in range(1, 101):
             try:
@@ -151,6 +192,7 @@ def edit_timetable(id):
             if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
                 is_varfarin = True
             result_breakfast.append(data)
+            summ += int(data[1])
 
         for i in range(1, 101):
             try:
@@ -162,6 +204,7 @@ def edit_timetable(id):
             if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
                 is_varfarin = True
             result_dinner.append(data)
+            summ += int(data[1])
 
         for i in range(1, 101):
             try:
@@ -173,6 +216,7 @@ def edit_timetable(id):
             if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
                 is_varfarin = True
             result_supper.append(data)
+            summ += int(data[1])
 
         vitamin = sum(map(lambda x: float(str(session.query(Products).filter(
             Products.name == ''.join(x[0].split(' (')[:-1])
@@ -202,6 +246,7 @@ def edit_timetable(id):
         timetable.vitamin = vitamin
         timetable.is_varfarin = is_varfarin
         timetable.color = color
+        timetable.summ = summ
         timetable.breakfast = result_breakfast
         timetable.dinner = result_dinner
         timetable.supper = result_supper
@@ -213,11 +258,11 @@ def edit_timetable(id):
             return redirect('/')
 
         if 'add_button_1' in request.form:
-            result_breakfast.append(('Выбрать', 0))
+            result_breakfast.append(('Выбрать ()', 0))
         if 'add_button_2' in request.form:
-            result_dinner.append(('Выбрать', 0))
+            result_dinner.append(('Выбрать ()', 0))
         if 'add_button_3' in request.form:
-            result_supper.append(('Выбрать', 0))
+            result_supper.append(('Выбрать ()', 0))
 
         values = [result_breakfast, result_dinner, result_supper]
         products = list(map(lambda x: f'{x.name} ({x.vitamin}мл.гр/100гр)', list_of_products))
@@ -251,6 +296,7 @@ def add_timetable():
             is_varfarin=False,
             master=current_user.id,
             color=color,
+            summ=0,
             breakfast=[],
             dinner=[],
             supper=[]
@@ -265,6 +311,7 @@ def add_timetable():
         result_dinner = []
         result_supper = []
         is_varfarin = False
+        summ = 0
 
         for i in range(1, 101):
             try:
@@ -276,6 +323,7 @@ def add_timetable():
             if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
                 is_varfarin = True
             result_breakfast.append(data)
+            summ += int(data[1])
 
         for i in range(1, 101):
             try:
@@ -287,6 +335,7 @@ def add_timetable():
             if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
                 is_varfarin = True
             result_dinner.append(data)
+            summ += int(data[1])
 
         for i in range(1, 101):
             try:
@@ -298,6 +347,7 @@ def add_timetable():
             if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
                 is_varfarin = True
             result_supper.append(data)
+            summ += int(data[1])
 
         vitamin = sum(map(lambda x: float(str(session.query(Products).filter(
                     Products.name == ''.join(x[0].split(' (')[:-1])
@@ -333,6 +383,7 @@ def add_timetable():
         timetable.breakfast = result_breakfast
         timetable.dinner = result_dinner
         timetable.supper = result_supper
+        timetable.summ = summ
 
         session.commit()
 
@@ -341,11 +392,11 @@ def add_timetable():
             return redirect('/')
 
         if 'add_button_1' in request.form:
-            result_breakfast.append(('Выбрать', 0))
+            result_breakfast.append(('Выбрать ()', 0))
         if 'add_button_2' in request.form:
-            result_dinner.append(('Выбрать', 0))
+            result_dinner.append(('Выбрать ()', 0))
         if 'add_button_3' in request.form:
-            result_supper.append(('Выбрать', 0))
+            result_supper.append(('Выбрать ()', 0))
 
         values = [result_breakfast, result_dinner, result_supper]
         products = list(map(lambda x: f'{x.name} ({x.vitamin}мл.гр/100гр)', list_of_products))

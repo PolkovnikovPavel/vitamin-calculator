@@ -65,7 +65,8 @@ for timetable in timetables:
             is_varfarin=timetable['is_varfarin'],
             percent=timetable['percent'],
             ch_ch_date=timetable['ch_ch_date'],
-            color=timetable['color']
+            color=timetable['color'],
+            summ=timetable['summ']
                         )
         session.add(timetable_db)
 
