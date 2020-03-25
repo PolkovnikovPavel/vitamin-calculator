@@ -81,7 +81,7 @@ def main():
     list_of_products_with_varfarin = list(map(lambda x: x.name, list_of_products_with_varfarin))
 
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='127.0.0.1', port=port)
+    app.run(host='0.0.0.0', port=port)
 
 
 @app.route("/")
@@ -209,6 +209,7 @@ def edit_timetable(id):
         session.commit()
 
         if 'complete' in request.form:
+            activity(f'chang timetable id - {timetable.id}')
             return redirect('/')
 
         if 'add_button_1' in request.form:
@@ -320,7 +321,6 @@ def add_timetable():
             date = f'{date.year}-{str(date.month).rjust(2, "0")}-{date.day}'
         ch_ch_date = get_ch_ch_date(date)
 
-
         timetable = session.query(Timetable).filter(Timetable.master == current_user.id).all()
         timetable = timetable[-1]
 
@@ -337,6 +337,7 @@ def add_timetable():
         session.commit()
 
         if 'complete' in request.form:
+            activity(f'add new timetable id - {timetable.id}')
             return redirect('/')
 
         if 'add_button_1' in request.form:
