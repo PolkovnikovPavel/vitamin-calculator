@@ -3,6 +3,12 @@
 {% block content %}
 <h1 style="text-align: center">Создание расписания блюд на день</h1>
 <form action="" method="post">
+
+    <div class="form-group" style="width: 20%;margin-left: 5%">
+        <label for="inputDate">Введите дату:</label>
+        <input type="date" name="date" value="{{ date }}" class="form-control">
+    </div>
+
     <div class="block" style="margin-left: 5%; display: inline-block;width: 30%">
 
     <button type="submit" class="btn btn-primary" name="add_button_1">Добавить ячейку</button>
@@ -22,10 +28,9 @@
             <td>
                     <select name="product_1_{{ loop.index }}" style="background-color: #eebef1" class="form-control">
       <option>{{ item[0] }}</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
+        {% for product in products %}
+            <option>{{ product }}</option>
+        {% endfor %}
                     </select>
             </td>
             <td>
@@ -36,9 +41,6 @@
         </tbody>
     </table>
     </div>
-
-
-
 
 
     <div class="block" style="display: inline-block;width: 30%">
@@ -60,10 +62,9 @@
             <td>
                     <select name="product_2_{{ loop.index }}" style="background-color: #dcd0ff" class="form-control">
       <option>{{ item[0] }}</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
+        {% for product in products %}
+            <option>{{ product }}</option>
+        {% endfor %}
                     </select>
             </td>
             <td>
@@ -74,11 +75,6 @@
         </tbody>
     </table>
     </div>
-
-
-
-
-
 
 
     <div class="block" style="display: inline-block;width: 30%">
@@ -100,10 +96,9 @@
             <td>
                     <select name="product_3_{{ loop.index }}" style="background-color: #afdafc" class="form-control">
       <option>{{ item[0] }}</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
+        {% for product in products %}
+            <option>{{ product }}</option>
+        {% endfor %}
                     </select>
             </td>
             <td>
@@ -116,7 +111,6 @@
     </div>
 
     <button style="margin-left: 5%" type="submit" class="btn btn-primary" name="complete">Завершить</button>
-
 
 </form>
 {% endblock %}

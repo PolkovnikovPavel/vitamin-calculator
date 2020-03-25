@@ -1,7 +1,7 @@
 NORM = 50
 
 
-from flask import Flask, render_template, redirect, request, abort, jsonify, make_response
+from flask import Flask, render_template, redirect, request, abort, jsonify, make_response, url_for
 from data import db_session
 from data.users import User
 from data.products import Products
@@ -45,7 +45,8 @@ class LoginForm(FlaskForm):
 
 
 def get_ch_ch_date(date):
-    return f"{date.day}.{date.month}.{date.year}"
+    year, month, day = date.split('-')
+    return f"{day}.{month}.{year}"
 
 
 app = Flask(__name__)
@@ -64,6 +65,7 @@ def load_user(user_id):
 
 
 def main():
+    global list_of_products, list_of_products_with_varfarin
     db_session.global_init("db/vitamin_calculator.sqlite")
     # api.add_resource(users_resource.UsersListResource, '/api/v2/users')
     # api.add_resource(users_resource.UsersResource, '/api/v2/users/<int:user_id>')
@@ -71,8 +73,15 @@ def main():
     # api.add_resource(jobs_resource.JobsResource, '/api/v2/jobs/<int:job_id>')
     api.add_resource(users_resource.DBResource, '/api/db')
 
+    session = db_session.create_session()
+    list_of_products = session.query(Products).filter(
+            Products.id != 0).all()
+    list_of_products_with_varfarin = session.query(Products).filter(
+            Products.is_varfarin == True).all()
+    list_of_products_with_varfarin = list(map(lambda x: x.name, list_of_products_with_varfarin))
+
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='127.0.0.1', port=port)
 
 
 @app.route("/")
@@ -104,44 +113,117 @@ def timetable_delete(id):
     return redirect('/')
 
 
-@app.route('/jobs/<int:id>', methods=['GET', 'POST'])
+@app.route('/timetable/<int:id>', methods=['GET', 'POST'])
 @login_required
-def edit_jobs(id):
-    form = JobsForm()
+def edit_timetable(id):
+    if not current_user.is_authenticated:
+        return redirect('/')
+
+    session = db_session.create_session()
+    timetable = session.query(Timetable).filter(Timetable.id == id,
+                                (Timetable.master == current_user.id)).first()
     if request.method == "GET":
-        session = db_session.create_session()
-        jobs = session.query(Jobs).filter(Jobs.id == id,
-                    ((Jobs.creator == current_user.id) | (current_user.id == 1))).first()
-        if jobs:
-            form.title.data = jobs.job
-            form.team_leader.data = jobs.team_leader
-            form.work_size.data = int(jobs.work_size)
-            form.collaborators.data = jobs.collaborators
-            form.is_finished.data = jobs.is_finished
-        else:
-            abort(404)
-    if form.validate_on_submit():
-        session = db_session.create_session()
+        result_breakfast = timetable.breakfast
+        result_dinner = timetable.dinner
+        result_supper = timetable.supper
+        date=timetable.date
 
-        if not session.query(User).filter(User.id == int(form.team_leader.data)).first():
-            return render_template('jobs.html', title='Редактирование работы',
-                                   form=form,
-                                   message='несуществующий id коммандира')
+        values = [result_breakfast, result_dinner, result_supper]
+        products = list(map(lambda x: f'{x.name} ({x.vitamin}мл.гр/100гр)', list_of_products))
+        products.sort()
 
-        job = session.query(Jobs).filter(Jobs.id == id,
-                    ((Jobs.creator == current_user.id) | (current_user.id == 1))).first()
-        if job:
-            job.job = form.title.data
-            job.team_leader = int(form.team_leader.data)
-            job.work_size = int(form.work_size.data)
-            job.collaborators = form.collaborators.data
-            job.is_finished = form.is_finished.data
+        return render_template("timetable.html", values=values,
+                               title='Внесение блюд', date=date)
 
-            session.commit()
+    else:
+        result_breakfast = []
+        result_dinner = []
+        result_supper = []
+        is_varfarin = False
+
+        for i in range(1, 101):
+            try:
+                data = (request.form[
+                            f'product_1_{i}'],
+                        request.form[f'count_1_{i}'])
+            except:
+                break
+            if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
+                is_varfarin = True
+            result_breakfast.append(data)
+
+        for i in range(1, 101):
+            try:
+                data = (request.form[
+                            f'product_2_{i}'],
+                        request.form[f'count_2_{i}'])
+            except:
+                break
+            if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
+                is_varfarin = True
+            result_dinner.append(data)
+
+        for i in range(1, 101):
+            try:
+                data = (request.form[
+                            f'product_3_{i}'],
+                        request.form[f'count_3_{i}'])
+            except:
+                break
+            if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
+                is_varfarin = True
+            result_supper.append(data)
+
+        vitamin = sum(map(lambda x: float(str(session.query(Products).filter(
+            Products.name == ''.join(x[0].split(' (')[:-1])
+                    ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_breakfast))
+
+        vitamin += sum(map(lambda x: float(str(session.query(Products).filter(
+            Products.name == ''.join(x[0].split(' (')[:-1])
+                    ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_dinner))
+
+        vitamin += sum(map(lambda x: float(str(session.query(Products).filter(
+            Products.name == ''.join(x[0].split(' (')[:-1])
+                    ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_supper))
+
+        vitamin = int(vitamin * 1000) / 1000
+        percent = int((vitamin / NORM * 10000) + 0.5) / 100
+        color = set_color(percent)
+
+        date = request.form['date']
+        if date == '':
+            date = datetime.datetime.now()
+            date = f'{date.year}-{str(date.month).rjust(2, "0")}-{date.day}'
+        ch_ch_date = get_ch_ch_date(date)
+
+        timetable.date = date
+        timetable.ch_ch_date = ch_ch_date
+        timetable.percent = percent
+        timetable.vitamin = vitamin
+        timetable.is_varfarin = is_varfarin
+        timetable.color = color
+        timetable.breakfast = result_breakfast
+        timetable.dinner = result_dinner
+        timetable.supper = result_supper
+
+        session.commit()
+
+        if 'complete' in request.form:
             return redirect('/')
-        else:
-            abort(404)
-    return render_template('jobs.html', title='Редактирование работы', form=form)
+
+        if 'add_button_1' in request.form:
+            result_breakfast.append(('Выбрать', 0))
+        if 'add_button_2' in request.form:
+            result_dinner.append(('Выбрать', 0))
+        if 'add_button_3' in request.form:
+            result_supper.append(('Выбрать', 0))
+
+        values = [result_breakfast, result_dinner, result_supper]
+        products = list(map(lambda x: f'{x.name} ({x.vitamin}мл.гр/100гр)', list_of_products))
+        products.sort()
+
+        return render_template("timetable.html", values=values, title='Внесение блюд',
+                               date=date, products=products)
 
 
 @app.route('/timetable',  methods=['GET', 'POST'])
@@ -155,7 +237,8 @@ def add_timetable():
         values = [[], [], []]
         activity('main timetable')
 
-        date = datetime.datetime.now()  # изменить установку по календарю
+        date = datetime.datetime.now()
+        date = f'{date.year}-{str(date.month).rjust(2, "0")}-{date.day}'
         ch_ch_date = get_ch_ch_date(date)
         color = set_color(0)
 
@@ -175,7 +258,7 @@ def add_timetable():
         session.add(timetable)
         session.commit()
 
-        return render_template("timetable.html", values=values, title='Внесение блюд')
+        return render_template("timetable.html", values=values, title='Внесение блюд', date=date)
     else:
         result_breakfast = []
         result_dinner = []
@@ -189,7 +272,7 @@ def add_timetable():
                         request.form[f'count_1_{i}'])
             except:
                 break
-            if data[0] in list_of_products_with_varfarin:
+            if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
                 is_varfarin = True
             result_breakfast.append(data)
 
@@ -200,7 +283,7 @@ def add_timetable():
                         request.form[f'count_2_{i}'])
             except:
                 break
-            if data[0] in list_of_products_with_varfarin:
+            if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
                 is_varfarin = True
             result_dinner.append(data)
 
@@ -211,19 +294,32 @@ def add_timetable():
                         request.form[f'count_3_{i}'])
             except:
                 break
-            if data[0] in list_of_products_with_varfarin:
+            if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
                 is_varfarin = True
             result_supper.append(data)
 
-        vitamin = sum(map(lambda x: float(x[1]), result_breakfast))
-        vitamin += sum(map(lambda x: float(x[1]), result_dinner))
-        vitamin += sum(map(lambda x: float(x[1]), result_supper))
+        vitamin = sum(map(lambda x: float(str(session.query(Products).filter(
+                    Products.name == ''.join(x[0].split(' (')[:-1])
+                        ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_breakfast))
 
+        vitamin += sum(map(lambda x: float(str(session.query(Products).filter(
+            Products.name == ''.join(x[0].split(' (')[:-1])
+
+                        ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_dinner))
+        vitamin += sum(map(lambda x: float(str(session.query(Products).filter(
+            Products.name == ''.join(x[0].split(' (')[:-1])
+                        ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_supper))
+
+        vitamin = int(vitamin * 1000) / 1000
         percent = int((vitamin / NORM * 10000) + 0.5) / 100
         color = set_color(percent)
 
-        date = datetime.datetime.now()   # изменить установку по календарю
+        date = request.form['date']
+        if date == '':
+            date = datetime.datetime.now()
+            date = f'{date.year}-{str(date.month).rjust(2, "0")}-{date.day}'
         ch_ch_date = get_ch_ch_date(date)
+
 
         timetable = session.query(Timetable).filter(Timetable.master == current_user.id).all()
         timetable = timetable[-1]
@@ -251,8 +347,11 @@ def add_timetable():
             result_supper.append(('Выбрать', 0))
 
         values = [result_breakfast, result_dinner, result_supper]
-        return render_template("timetable.html", values=values, title='Внесение блюд')
+        products = list(map(lambda x: f'{x.name} ({x.vitamin}мл.гр/100гр)', list_of_products))
+        products.sort()
 
+        return render_template("timetable.html", values=values, title='Внесение блюд',
+                               date=date, products=products)
 
 
 @app.route('/logout')
@@ -331,7 +430,4 @@ def activity(name=''):
 
 
 if __name__ == '__main__':
-    list_of_products_with_varfarin = []
-
-
     main()

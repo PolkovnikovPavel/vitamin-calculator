@@ -22,7 +22,7 @@ class Timetable(SqlAlchemyBase, SerializerMixin):
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
-    date = sqlalchemy.Column(sqlalchemy.DateTime)
+    date = sqlalchemy.Column(sqlalchemy.String)
     breakfast = sqlalchemy.Column(sqlalchemy.JSON)
     dinner = sqlalchemy.Column(sqlalchemy.JSON)
     supper = sqlalchemy.Column(sqlalchemy.JSON)
