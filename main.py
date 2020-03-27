@@ -181,10 +181,57 @@ def look_timetable(id):
         result_breakfast = timetable.breakfast
         result_dinner = timetable.dinner
         result_supper = timetable.supper
-        date=timetable.date
+        result_breakfast_varfarin = []
+        result_dinner_varfarin = []
+        result_supper_varfarin = []
+        percents_breakfast = []
+        percents_dinner = []
+        percents_supper = []
+        date = timetable.date
+
+        for result in result_breakfast:
+            text = ' ('.join(result[0].split(' (')[:-1])
+
+            if text in list_of_products_with_varfarin:
+                result_breakfast_varfarin.append(True)
+            else:
+                result_breakfast_varfarin.append(False)
+            product = session.query(Products).filter(
+                Products.name == text).first()
+            num = float(str(product.vitamin).replace(',', '.')) / 100 * int(
+                result[1]) * 100 / NORM
+            percents_breakfast.append(int(num * 100) / 100)
+
+        for result in result_dinner:
+            text = ' ('.join(result[0].split(' (')[:-1])
+
+            if text in list_of_products_with_varfarin:
+                result_dinner_varfarin.append(True)
+            else:
+                result_dinner_varfarin.append(False)
+            product = session.query(Products).filter(
+                Products.name == text).first()
+            num = float(str(product.vitamin).replace(',', '.')) / 100 * int(
+                result[1]) * 100 / NORM
+            percents_dinner.append(int(num * 100) / 100)
+
+        for result in result_supper:
+            text = ' ('.join(result[0].split(' (')[:-1])
+
+            if text in list_of_products_with_varfarin:
+                result_dinner_varfarin.append(True)
+            else:
+                result_dinner_varfarin.append(False)
+            product = session.query(Products).filter(
+                Products.name == text).first()
+            num = float(str(product.vitamin).replace(',', '.')) / 100 * int(
+                result[1]) * 100 / NORM
+            percents_supper.append(int(num * 100) / 100)
 
         values = [result_breakfast, result_dinner, result_supper,
-                  len(result_breakfast), len(result_dinner), len(result_supper)]
+                  len(result_breakfast), len(result_dinner), len(result_supper),
+                  result_breakfast_varfarin, result_dinner_varfarin, result_supper_varfarin,
+                  percents_breakfast, percents_dinner, percents_supper]
 
         return render_template("look_timetable.html", values=values,
                                title='Просмотр блюд', date=date)
@@ -206,9 +253,31 @@ def edit_timetable(id):
         result_breakfast = timetable.breakfast
         result_dinner = timetable.dinner
         result_supper = timetable.supper
+        result_breakfast_varfarin = []
+        result_dinner_varfarin = []
+        result_supper_varfarin = []
+
+        for result in result_breakfast:
+            if ' ('.join(result[0].split(' (')[:-1]) in list_of_products_with_varfarin:
+                result_breakfast_varfarin.append(True)
+            else:
+                result_breakfast_varfarin.append(False)
+        for result in result_dinner:
+            if ' ('.join(result[0].split(' (')[:-1]) in list_of_products_with_varfarin:
+                result_dinner_varfarin.append(True)
+            else:
+                result_dinner_varfarin.append(False)
+        for result in result_supper:
+            if ' ('.join(result[0].split(' (')[:-1]) in list_of_products_with_varfarin:
+                result_supper_varfarin.append(True)
+            else:
+                result_supper_varfarin.append(False)
+
         date=timetable.date
 
-        values = [result_breakfast, result_dinner, result_supper]
+        values = [result_breakfast, result_dinner, result_supper,
+                  result_breakfast_varfarin, result_dinner_varfarin,
+                  result_supper_varfarin]
         products = list(map(lambda x: (f'{x.name} ({x.vitamin}мл.гр/100гр)',
                                        x.name in list_of_products_with_varfarin),
                             list_of_products))
@@ -221,6 +290,9 @@ def edit_timetable(id):
         result_breakfast = []
         result_dinner = []
         result_supper = []
+        result_breakfast_varfarin = []
+        result_dinner_varfarin = []
+        result_supper_varfarin = []
         is_varfarin = False
         summ = 0
 
@@ -231,10 +303,15 @@ def edit_timetable(id):
                         request.form[f'count_1_{i}'])
             except:
                 break
-            if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
-                is_varfarin = True
-            result_breakfast.append(data)
-            summ += int(data[1])
+            if data[0] != 'Удалить следуйщим действием':
+                if ' ('.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
+                    is_varfarin = True
+                    result_breakfast_varfarin.append(True)
+                else:
+                    result_breakfast_varfarin.append(False)
+
+                result_breakfast.append(data)
+                summ += int(data[1])
 
         for i in range(1, 101):
             try:
@@ -243,10 +320,15 @@ def edit_timetable(id):
                         request.form[f'count_2_{i}'])
             except:
                 break
-            if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
-                is_varfarin = True
-            result_dinner.append(data)
-            summ += int(data[1])
+            if data[0] != 'Удалить следуйщим действием':
+                if ' ('.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
+                    is_varfarin = True
+                    result_dinner_varfarin.append(True)
+                else:
+                    result_dinner_varfarin.append(False)
+
+                result_dinner.append(data)
+                summ += int(data[1])
 
         for i in range(1, 101):
             try:
@@ -255,10 +337,15 @@ def edit_timetable(id):
                         request.form[f'count_3_{i}'])
             except:
                 break
-            if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
-                is_varfarin = True
-            result_supper.append(data)
-            summ += int(data[1])
+            if data[0] != 'Удалить следуйщим действием':
+                if ' ('.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
+                    is_varfarin = True
+                    result_supper_varfarin.append(True)
+                else:
+                    result_supper_varfarin.append(False)
+
+                result_supper.append(data)
+                summ += int(data[1])
 
         vitamin = sum(map(lambda x: float(str(session.query(Products).filter(
             Products.name == ' ('.join(x[0].split(' (')[:-1])
@@ -308,7 +395,8 @@ def edit_timetable(id):
         if 'add_button_3' in request.form:
             result_supper.append(('Выбрать ()', 0))
 
-        values = [result_breakfast, result_dinner, result_supper]
+        values = [result_breakfast, result_dinner, result_supper,
+                  result_breakfast_varfarin, result_dinner_varfarin, result_supper_varfarin]
         products = list(map(lambda x: (f'{x.name} ({x.vitamin}мл.гр/100гр)',
                                        x.name in list_of_products_with_varfarin),
                             list_of_products))

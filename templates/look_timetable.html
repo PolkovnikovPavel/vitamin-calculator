@@ -17,17 +17,18 @@
     <table class="table table-sm table-inverse" style="margin-right: auto; max-width: 100%">
         <thead>
             <tr class="table-active">
-            <th style="width:73%">Блюдо</th>
-            <th style="width:27%">Вес продукта, гр.</th>
+            <th style="width:65%">Блюдо</th>
+            <th style="width:24%">Вес продукта, гр.</th>
+            <th style="width:11%">% от нормы</th>
 
         </thead>
         <tbody>
         <tr style="background-color: #eebef1">
-            <td colspan="2" style="text-align: center">Завтрак</td>
+            <td colspan="3" style="text-align: center">Завтрак</td>
         </tr>
         {% for item in values[0] %}
             <tr style="background-color: #eebef1">
-            <td>
+            <td {% if values[6][loop.index-1] %}style="background-color: #ed938e"{% endif %}>
                     <select name="product_1_{{ loop.index }}" style="background-color: #eebef1" class="form-control">
       <option>{{ item[0] }}</option>
         {% for product in products %}
@@ -38,6 +39,7 @@
             <td>
       <input style="background-color: #eebef1" type="number" step="1" min="{{ item[1] }}" max="{{ item[1] }}" name="count_1_{{ loop.index }}" value="{{ item[1] }}">
             </td>
+            <td>{{ values[9][loop.index-1] }}%</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -53,17 +55,18 @@
     <table class="table table-sm table-inverse" style="margin-right: auto; max-width: 100%">
         <thead>
             <tr class="table-active">
-            <th style="width:73%">Блюдо</th>
-            <th style="width:27%">Вес продукта, гр.</th>
+            <th style="width:65%">Блюдо</th>
+            <th style="width:24%">Вес продукта, гр.</th>
+            <th style="width:11%">% от нормы</th>
 
         </thead>
         <tbody>
         <tr style="background-color: #dcd0ff">
-            <td colspan="2" style="text-align: center">Обед</td>
+            <td colspan="3" style="text-align: center">Обед</td>
         </tr>
         {% for item in values[1] %}
             <tr style="background-color: #dcd0ff">
-            <td>
+            <td {% if values[7][loop.index-1] %}style="background-color: #ed938e"{% endif %}>
                     <select name="product_2_{{ loop.index }}" style="background-color: #dcd0ff" class="form-control">
       <option>{{ item[0] }}</option>
         {% for product in products %}
@@ -74,6 +77,7 @@
             <td>
       <input style="background-color: #dcd0ff" type="number" step="1" min="{{ item[1] }}" max="{{ item[1] }}" name="count_2_{{ loop.index }}" value="{{ item[1] }}">
             </td>
+            <td>{{ values[10][loop.index-1] }}%</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -89,17 +93,18 @@
     <table class="table table-sm table-inverse" style=" margin-right: auto; max-width: 100%">
         <thead>
             <tr class="table-active">
-            <th style="width:73%">Блюдо</th>
-            <th style="width:27%">Вес продукта, гр.</th>
+            <th style="width:65%">Блюдо</th>
+            <th style="width:24%">Вес продукта, гр.</th>
+            <th style="width:11%">% от нормы</th>
 
         </thead>
         <tbody>
         <tr style="background-color: #afdafc">
-            <td colspan="2" style="text-align: center">Ужин</td>
+            <td colspan="3" style="text-align: center">Ужин</td>
         </tr>
         {% for item in values[2] %}
             <tr style="background-color: #afdafc">
-            <td>
+            <td {% if values[8][loop.index-1] %}style="background-color: #ed938e"{% endif %}>
                     <select name="product_3_{{ loop.index }}" style="background-color: #afdafc" class="form-control">
       <option>{{ item[0] }}</option>
         {% for product in products %}
@@ -110,6 +115,7 @@
             <td>
       <input style="background-color: #afdafc" type="number" step="1" min="{{ item[1] }}" max="{{ item[1] }}" name="count_3_{{ loop.index }}" value="{{ item[1] }}">
             </td>
+            <td>{{ values[11][loop.index-1] }}%</td>
             </tr>
         {% endfor %}
         </tbody>

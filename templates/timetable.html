@@ -25,9 +25,10 @@
         </tr>
         {% for item in values[0] %}
             <tr style="background-color: #eebef1">
-            <td>
+            <td {% if values[3][loop.index-1] %}style="background-color: #ed938e"{% endif %}>
                     <select name="product_1_{{ loop.index }}" style="background-color: #eebef1" class="form-control">
       <option>{{ item[0] }}</option>
+      <option>Удалить следуйщим действием</option>
         {% for product in products %}
             <option {% if product[1] %}style="background-color: #ed938e"{% endif %}>{{ product[0] }}</option>
         {% endfor %}
@@ -59,11 +60,12 @@
         </tr>
         {% for item in values[1] %}
             <tr style="background-color: #dcd0ff">
-            <td>
+            <td {% if values[4][loop.index-1] %}style="background-color: #ed938e"{% endif %}>
                     <select name="product_2_{{ loop.index }}" style="background-color: #dcd0ff" class="form-control">
       <option>{{ item[0] }}</option>
+      <option>Удалить следуйщим действием</option>
         {% for product in products %}
-            <option>{{ product }}</option>
+            <option {% if product[1] %}style="background-color: #ed938e"{% endif %}>{{ product[0] }}</option>
         {% endfor %}
                     </select>
             </td>
@@ -93,11 +95,12 @@
         </tr>
         {% for item in values[2] %}
             <tr style="background-color: #afdafc">
-            <td>
+            <td {% if values[5][loop.index-1] %}style="background-color: #ed938e"{% endif %}>
                     <select name="product_3_{{ loop.index }}" style="background-color: #afdafc" class="form-control">
       <option>{{ item[0] }}</option>
+      <option>Удалить следуйщим действием</option>
         {% for product in products %}
-            <option>{{ product }}</option>
+            <option {% if product[1] %}style="background-color: #ed938e"{% endif %}>{{ product[0] }}</option>
         {% endfor %}
                     </select>
             </td>
