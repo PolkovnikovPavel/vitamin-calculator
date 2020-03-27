@@ -17,11 +17,12 @@
   <h3 style="margin-left: 10%"> №{{ loop.index }}</h3>
   <thead>
     <tr class="table-active">
-      <th style="width:15%">Дата</th>
-      <th style="width:20%">Сумарный вес продуктов</th>
-      <th style="width:20%">Витамин К, мл.гр.</th>
-      <th style="width:20%">% от нормы</th>
-      <th style="width:25%">Угроза при приминении "Варфарина"</th>
+      <th style="width:10%">Дата</th>
+      <th style="width:14%">Сумарный вес продуктов</th>
+      <th style="width:14%">Витамин К, мл.гр.</th>
+      <th style="width:14%">% от нормы</th>
+      <th style="width:24%">Статус</th>
+      <th style="width:24%">Наличие продуктов усиливующих действие "Варфарина"</th>
     </tr>
   </thead>
   <tbody>
@@ -30,24 +31,40 @@
       <td style="background-color: {{ item.color }}">{{ item.summ }} гр.</td>
       <td style="background-color: {{ item.color }}">{{ item.vitamin }}</td>
       <td style="background-color: {{ item.color }}">{{ item.percent }}</td>
+      <td style="background-color: {{ item.color }}">{{ item.status }}</td>
       {% if current_user.is_varfarin==0 %}
         <td style="background-color: #d7d7d7">На вас не влияет</td>
       {% else %}
 
         {% if item.is_varfarin==0 %}
-          <td style="background-color: #a7d984">Безопасно для вас</td>
+          <td style="background-color: #a7d984">Отсутствуют</td>
         {% else %}
-          <td style="background-color: #e66761">Может усиливать действие "Варфарина"</td>
+          <td style="background-color: #e66761">Имеются, действие "Варфарина" может усиливаться</td>
         {% endif %}
 
       {% endif %}
     </tr>
   </tbody>
 </table>
-    <div>
-      <a href="/timetable/{{ item.id }}" class="btn btn-warning" style="margin-left: 10%">Изменить</a>
-      <a href="/look_timetable/{{ item.id }}" class="btn" style="background-color: #dbd7d3">Просмотреть</a>
-      <a href="/timetable_delete/{{ item.id }}" class="btn btn-danger">Удалить</a>
+    <div style="margin-bottom: 2%;">
+      <a data-toggle="tooltip" data-placement="bottom" title="Изменить или доболнить это расписание" href="/timetable/{{ item.id }}" class="btn btn-warning" style="margin-left: 10%">
+        Изменить</a>
+
+      <a data-toggle="tooltip" data-placement="bottom" title="Открыть детальный просмотр этого расписания" href="/look_timetable/{{ item.id }}" class="btn" style="background-color: #dbd7d3">
+        Просмотреть</a>
+
+      <a data-toggle="tooltip" data-placement="bottom" title="Удалить на совсем это расписание" href="/timetable_delete/{{ item.id }}" class="btn btn-danger">
+        Удалить</a>
+
+      <a data-toggle="tooltip" data-placement="bottom" title="Полностью скопировать расписание этого дня на сегодня" href="/timetable_duplicate/{{ item.id }}" class="btn btn-info">
+        Дублировать</a>
     </div>
 {% endfor %}
+
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+
 {% endblock %}

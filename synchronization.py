@@ -61,12 +61,13 @@ for timetable in timetables:
             master=timetable['master'],
             vitamin=timetable['vitamin'],
             id=timetable['id'],
-            date=pars_str_to_date(timetable['date']),
+            date=timetable['date'],
             is_varfarin=timetable['is_varfarin'],
             percent=timetable['percent'],
             ch_ch_date=timetable['ch_ch_date'],
             color=timetable['color'],
-            summ=timetable['summ']
+            summ=timetable['summ'],
+            status=timetable['status']
                         )
         session.add(timetable_db)
 

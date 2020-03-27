@@ -1,4 +1,4 @@
-NORM = 50
+NORM = 72.5
 
 
 from flask import Flask, render_template, redirect, request, abort, jsonify, make_response, url_for
@@ -6,7 +6,7 @@ from data import db_session
 from data.users import User
 from data.products import Products
 from data.activity import Activities
-from data.records import Timetable, set_color
+from data.records import Timetable, set_color, set_status
 import users_resource
 
 
@@ -34,7 +34,7 @@ class RegisterForm(FlaskForm):
     is_varfarin = BooleanField('Вы принимаете Варфарин')
     password = PasswordField('Пароль', validators=[DataRequired()])
     password_again = PasswordField('Повторите пароль', validators=[DataRequired()])
-    submit = SubmitField('Завершить')
+    submit = SubmitField('Продолжить')
 
 
 class LoginForm(FlaskForm):
@@ -94,7 +94,7 @@ def main():
     list_of_products_with_varfarin = list(map(lambda x: x.name, list_of_products_with_varfarin))
 
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='127.0.0.1', port=port)
 
 
 @app.route("/")
@@ -114,7 +114,7 @@ def index():
                            current_user=current_user, title='Журнал')
 
 
-@app.route('/timetable_delete/<int:id>', methods=['GET', 'POST'])
+@app.route('/timetable_delete/<int:id>')
 @login_required
 def timetable_delete(id):
     session = db_session.create_session()
@@ -126,6 +126,45 @@ def timetable_delete(id):
         activity(f'delete timetable, id - {timetable.id}')
     else:
         abort(404)
+    return redirect('/')
+
+
+@app.route('/timetable_duplicate/<int:id>')
+@login_required
+def duplicate_timetable(id):
+    if not current_user.is_authenticated:
+        return redirect('/')
+
+    session = db_session.create_session()
+    timetable_old = session.query(Timetable).filter(Timetable.id == id,
+                                (Timetable.master == current_user.id)).first()
+
+    if not timetable_old:
+        abort(404)
+
+    date = datetime.datetime.now()
+    date = f'{date.year}-{str(date.month).rjust(2, "0")}-{date.day}'
+    ch_ch_date = get_ch_ch_date(date)
+
+    timetable_new = Timetable(
+        date=date,
+        ch_ch_date=ch_ch_date,
+        percent=timetable_old.percent,
+        vitamin=timetable_old.vitamin,
+        is_varfarin=timetable_old.is_varfarin,
+        master=timetable_old.master,
+        color=timetable_old.color,
+        summ=timetable_old.summ,
+        breakfast=timetable_old.breakfast,
+        dinner=timetable_old.dinner,
+        supper=timetable_old.supper,
+        status=timetable_old.status
+    )
+
+    session.add(timetable_new)
+    session.commit()
+    activity(f'duplicate timetable with id={timetable_old.id} to id={timetable_new.id}')
+
     return redirect('/')
 
 
@@ -144,7 +183,8 @@ def look_timetable(id):
         result_supper = timetable.supper
         date=timetable.date
 
-        values = [result_breakfast, result_dinner, result_supper]
+        values = [result_breakfast, result_dinner, result_supper,
+                  len(result_breakfast), len(result_dinner), len(result_supper)]
 
         return render_template("look_timetable.html", values=values,
                                title='Просмотр блюд', date=date)
@@ -169,7 +209,9 @@ def edit_timetable(id):
         date=timetable.date
 
         values = [result_breakfast, result_dinner, result_supper]
-        products = list(map(lambda x: f'{x.name} ({x.vitamin}мл.гр/100гр)', list_of_products))
+        products = list(map(lambda x: (f'{x.name} ({x.vitamin}мл.гр/100гр)',
+                                       x.name in list_of_products_with_varfarin),
+                            list_of_products))
         products.sort()
 
         return render_template("timetable.html", values=values, products=products,
@@ -219,20 +261,21 @@ def edit_timetable(id):
             summ += int(data[1])
 
         vitamin = sum(map(lambda x: float(str(session.query(Products).filter(
-            Products.name == ''.join(x[0].split(' (')[:-1])
+            Products.name == ' ('.join(x[0].split(' (')[:-1])
                     ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_breakfast))
 
         vitamin += sum(map(lambda x: float(str(session.query(Products).filter(
-            Products.name == ''.join(x[0].split(' (')[:-1])
+            Products.name == ' ('.join(x[0].split(' (')[:-1])
                     ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_dinner))
 
         vitamin += sum(map(lambda x: float(str(session.query(Products).filter(
-            Products.name == ''.join(x[0].split(' (')[:-1])
+            Products.name == ' ('.join(x[0].split(' (')[:-1])
                     ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_supper))
 
         vitamin = int(vitamin * 1000) / 1000
         percent = int((vitamin / NORM * 10000) + 0.5) / 100
         color = set_color(percent)
+        status = set_status(percent)
 
         date = request.form['date']
         if date == '':
@@ -246,6 +289,7 @@ def edit_timetable(id):
         timetable.vitamin = vitamin
         timetable.is_varfarin = is_varfarin
         timetable.color = color
+        timetable.status = status
         timetable.summ = summ
         timetable.breakfast = result_breakfast
         timetable.dinner = result_dinner
@@ -265,145 +309,50 @@ def edit_timetable(id):
             result_supper.append(('Выбрать ()', 0))
 
         values = [result_breakfast, result_dinner, result_supper]
-        products = list(map(lambda x: f'{x.name} ({x.vitamin}мл.гр/100гр)', list_of_products))
+        products = list(map(lambda x: (f'{x.name} ({x.vitamin}мл.гр/100гр)',
+                                       x.name in list_of_products_with_varfarin),
+                            list_of_products))
         products.sort()
 
         return render_template("timetable.html", values=values, title='Внесение блюд',
                                date=date, products=products)
 
 
-@app.route('/timetable',  methods=['GET', 'POST'])
+@app.route('/timetable')
 @login_required
 def add_timetable():
     if not current_user.is_authenticated:
         return redirect('/')
 
     session = db_session.create_session()
-    if request.method == 'GET':
-        values = [[], [], []]
-        activity('main timetable')
 
-        date = datetime.datetime.now()
-        date = f'{date.year}-{str(date.month).rjust(2, "0")}-{date.day}'
-        ch_ch_date = get_ch_ch_date(date)
-        color = set_color(0)
+    activity('main timetable')
 
-        timetable = Timetable(
-            date=date,
-            ch_ch_date=ch_ch_date,
-            percent=0,
-            vitamin=0,
-            is_varfarin=False,
-            master=current_user.id,
-            color=color,
-            summ=0,
-            breakfast=[],
-            dinner=[],
-            supper=[]
-        )
+    date = datetime.datetime.now()
+    date = f'{date.year}-{str(date.month).rjust(2, "0")}-{date.day}'
+    ch_ch_date = get_ch_ch_date(date)
+    color = set_color(0)
+    status = set_status(0)
 
-        session.add(timetable)
-        session.commit()
+    timetable = Timetable(
+        date=date,
+        ch_ch_date=ch_ch_date,
+        percent=0,
+        vitamin=0,
+        is_varfarin=False,
+        master=current_user.id,
+        color=color,
+        status=status,
+        summ=0,
+        breakfast=[],
+        dinner=[],
+        supper=[]
+    )
 
-        return render_template("timetable.html", values=values, title='Внесение блюд', date=date)
-    else:
-        result_breakfast = []
-        result_dinner = []
-        result_supper = []
-        is_varfarin = False
-        summ = 0
+    session.add(timetable)
+    session.commit()
 
-        for i in range(1, 101):
-            try:
-                data = (request.form[
-                            f'product_1_{i}'],
-                        request.form[f'count_1_{i}'])
-            except:
-                break
-            if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
-                is_varfarin = True
-            result_breakfast.append(data)
-            summ += int(data[1])
-
-        for i in range(1, 101):
-            try:
-                data = (request.form[
-                            f'product_2_{i}'],
-                        request.form[f'count_2_{i}'])
-            except:
-                break
-            if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
-                is_varfarin = True
-            result_dinner.append(data)
-            summ += int(data[1])
-
-        for i in range(1, 101):
-            try:
-                data = (request.form[
-                            f'product_3_{i}'],
-                        request.form[f'count_3_{i}'])
-            except:
-                break
-            if ''.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
-                is_varfarin = True
-            result_supper.append(data)
-            summ += int(data[1])
-
-        vitamin = sum(map(lambda x: float(str(session.query(Products).filter(
-                    Products.name == ''.join(x[0].split(' (')[:-1])
-                        ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_breakfast))
-
-        vitamin += sum(map(lambda x: float(str(session.query(Products).filter(
-            Products.name == ''.join(x[0].split(' (')[:-1])
-
-                        ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_dinner))
-        vitamin += sum(map(lambda x: float(str(session.query(Products).filter(
-            Products.name == ''.join(x[0].split(' (')[:-1])
-                        ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_supper))
-
-        vitamin = int(vitamin * 1000) / 1000
-        percent = int((vitamin / NORM * 10000) + 0.5) / 100
-        color = set_color(percent)
-
-        date = request.form['date']
-        if date == '':
-            date = datetime.datetime.now()
-            date = f'{date.year}-{str(date.month).rjust(2, "0")}-{date.day}'
-        ch_ch_date = get_ch_ch_date(date)
-
-        timetable = session.query(Timetable).filter(Timetable.master == current_user.id).all()
-        timetable = timetable[-1]
-
-        timetable.date = date
-        timetable.ch_ch_date = ch_ch_date
-        timetable.percent = percent
-        timetable.vitamin = vitamin
-        timetable.is_varfarin = is_varfarin
-        timetable.color = color
-        timetable.breakfast = result_breakfast
-        timetable.dinner = result_dinner
-        timetable.supper = result_supper
-        timetable.summ = summ
-
-        session.commit()
-
-        if 'complete' in request.form:
-            activity(f'add new timetable id - {timetable.id}')
-            return redirect('/')
-
-        if 'add_button_1' in request.form:
-            result_breakfast.append(('Выбрать ()', 0))
-        if 'add_button_2' in request.form:
-            result_dinner.append(('Выбрать ()', 0))
-        if 'add_button_3' in request.form:
-            result_supper.append(('Выбрать ()', 0))
-
-        values = [result_breakfast, result_dinner, result_supper]
-        products = list(map(lambda x: f'{x.name} ({x.vitamin}мл.гр/100гр)', list_of_products))
-        products.sort()
-
-        return render_template("timetable.html", values=values, title='Внесение блюд',
-                               date=date, products=products)
+    return redirect(f'/timetable/{timetable.id}')
 
 
 @app.route('/logout')
