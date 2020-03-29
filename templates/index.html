@@ -57,6 +57,16 @@
 
       {% endif %}
     </tr>
+    <tr>
+      <td style="background-color: {{ item.color }}">Все продукты:</td>
+      <td colspan="3" style="background-color: {{ item.color }}">{{ item.all_products }}</td>
+      <td style="background-color: {{ item.color }}"></td>
+      {% if item.is_varfarin==0 %}
+          <td style="background-color: #a7d984">{{ item.all_products_varfarin }}</td>
+        {% else %}
+          <td style="background-color: #e66761">{{ item.all_products_varfarin }}</td>
+        {% endif %}
+    </tr>
   </tbody>
 </table>
     <div style="margin-bottom: 2%;">

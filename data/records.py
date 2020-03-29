@@ -11,14 +11,14 @@ def set_status(percent=100):
 
     if percent > 117.2:
         status = f'''Норма сильно превышена, опасно тем, что кровь будет очень густой, чревато тромбозами!
-Нужно уменьшить потребление витамина К на {int(percent + 0.5) - 117}%'''
+Нужно уменьшить потребление витамина К на {round(percent + 0.5 - 117, 2)}%'''
     elif percent > 110.75:
         status = 'Количистов витамина К находится в максимальной граници нормы'
     elif percent > 104.4:
         status = 'Содержание витамина К близко к идеальному'
     elif percent < 82.8:
         status = f'''Витамин К намного меньше нормы, кровь очень жидкая, крайне опасно внутренними и другими кровотечениями!
-Необходимо увеличить потребление витамина К на {82.8 - int(percent  + 0.5)}%'''
+Необходимо увеличить потребление витамина К на {round(82.8 - percent, 2)}%'''
     elif percent < 89.25:
         status = 'Количество витамина К близко к минимальным значениям нормы, можно увеличить потребление продуктов с витамином К'
     elif percent < 95.6:
@@ -60,5 +60,8 @@ class Timetable(SqlAlchemyBase, SerializerMixin):
     ch_ch_date = sqlalchemy.Column(sqlalchemy.String)
     summ = sqlalchemy.Column(sqlalchemy.Integer)
     status = sqlalchemy.Column(sqlalchemy.String)
+    all_products = sqlalchemy.Column(sqlalchemy.String,
+                                     default='Не выбрано или ошибка')
+    all_products_varfarin = sqlalchemy.Column(sqlalchemy.String)
 
     color = sqlalchemy.Column(sqlalchemy.String, default='#ff6666')

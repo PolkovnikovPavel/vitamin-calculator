@@ -311,6 +311,7 @@ def edit_timetable(id):
         result_dinner_varfarin = []
         result_supper_varfarin = []
         is_varfarin = False
+        all_products = []
         list_of_prod_varf = []
         summ = 0
 
@@ -321,14 +322,19 @@ def edit_timetable(id):
                         request.form[f'count_1_{i}'])
             except:
                 break
-            if ' ('.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
+            name = ' ('.join(data[0].split(' (')[:-1])
+            vitamin = float(str(session.query(Products).filter(
+            Products.name == name).first().vitamin).replace(',', '.'))
+
+            if name in list_of_products_with_varfarin:
                 is_varfarin = True
-                list_of_prod_varf.append(' ('.join(data[0].split(' (')[:-1]))
+                list_of_prod_varf.append(name)
                 result_breakfast_varfarin.append(True)
             else:
                 result_breakfast_varfarin.append(False)
 
             result_breakfast.append(data)
+            all_products.append(f"{name}({data[1]}гр - {round(vitamin*int(data[1])/NORM, 1)}%)")
             summ += int(data[1])
 
         for i in range(1, 101):
@@ -338,14 +344,19 @@ def edit_timetable(id):
                         request.form[f'count_2_{i}'])
             except:
                 break
-            if ' ('.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
+            name = ' ('.join(data[0].split(' (')[:-1])
+            vitamin = float(str(session.query(Products).filter(
+                Products.name == name).first().vitamin).replace(',', '.'))
+
+            if name in list_of_products_with_varfarin:
                 is_varfarin = True
-                list_of_prod_varf.append(' ('.join(data[0].split(' (')[:-1]))
+                list_of_prod_varf.append(name)
                 result_dinner_varfarin.append(True)
             else:
                 result_dinner_varfarin.append(False)
 
             result_dinner.append(data)
+            all_products.append(f"{name}({data[1]}гр - {round(vitamin*int(data[1])/NORM, 1)}%)")
             summ += int(data[1])
 
         for i in range(1, 101):
@@ -355,14 +366,19 @@ def edit_timetable(id):
                         request.form[f'count_3_{i}'])
             except:
                 break
-            if ' ('.join(data[0].split(' (')[:-1]) in list_of_products_with_varfarin:
+            name = ' ('.join(data[0].split(' (')[:-1])
+            vitamin = float(str(session.query(Products).filter(
+                Products.name == name).first().vitamin).replace(',', '.'))
+
+            if name in list_of_products_with_varfarin:
                 is_varfarin = True
-                list_of_prod_varf.append(' ('.join(data[0].split(' (')[:-1]))
+                list_of_prod_varf.append(name)
                 result_supper_varfarin.append(True)
             else:
                 result_supper_varfarin.append(False)
 
             result_supper.append(data)
+            all_products.append(f"{name}({data[1]}гр - {round(vitamin*int(data[1])/NORM, 1)}%)")
             summ += int(data[1])
 
         vitamin = sum(map(lambda x: float(str(session.query(Products).filter(
@@ -377,8 +393,8 @@ def edit_timetable(id):
             Products.name == ' ('.join(x[0].split(' (')[:-1])
                     ).first().vitamin).replace(',', '.')) / 100 * int(x[1]), result_supper))
 
-        vitamin = int(vitamin * 1000) / 1000
-        percent = int((vitamin / NORM * 10000) + 0.5) / 100
+        vitamin = round(vitamin, 3)
+        percent = round(vitamin / NORM * 100, 2)
         color = set_color(percent)
         status = set_status(percent)
 
@@ -399,6 +415,8 @@ def edit_timetable(id):
         timetable.breakfast = result_breakfast
         timetable.dinner = result_dinner
         timetable.supper = result_supper
+        timetable.all_products = ', '.join(all_products)
+        timetable.all_products_varfarin = ',  '.join(list_of_prod_varf)
 
         session.commit()
 
@@ -453,7 +471,9 @@ def add_timetable():
         summ=0,
         breakfast=[],
         dinner=[],
-        supper=[]
+        supper=[],
+        all_products='Не выбрано',
+        all_products_varfarin=''
     )
 
     session.add(timetable)
