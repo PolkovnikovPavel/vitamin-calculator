@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 style="text-align: center">Обзор расписания блюд на день</h1>
+<h1 style="text-align: center">Обзор расписания продуктов на день</h1>
 <form action="" method="post">
 
     <div class="form-group" style="width: 20%;margin-left: 5%">
@@ -12,12 +12,12 @@
     <div class="block" style="margin-left: 5%; display: inline-block;width: 30%">
 
     <a><div class="p-1" style="background-color: #d9d9d9;text-align: center">
-        Элементов: {{ values[3] }}
+        Продуктов: {{ values[3] }}
     </div></a>
     <table class="table table-sm table-inverse" style="margin-right: auto; max-width: 100%">
         <thead>
             <tr class="table-active">
-            <th style="width:65%">Блюдо</th>
+            <th style="width:65%">Продукт</th>
             <th style="width:24%">Вес продукта, гр.</th>
             <th style="width:11%">% от нормы</th>
 
@@ -55,7 +55,7 @@
     <table class="table table-sm table-inverse" style="margin-right: auto; max-width: 100%">
         <thead>
             <tr class="table-active">
-            <th style="width:65%">Блюдо</th>
+            <th style="width:65%">Продукт</th>
             <th style="width:24%">Вес продукта, гр.</th>
             <th style="width:11%">% от нормы</th>
 
@@ -93,7 +93,7 @@
     <table class="table table-sm table-inverse" style=" margin-right: auto; max-width: 100%">
         <thead>
             <tr class="table-active">
-            <th style="width:65%">Блюдо</th>
+            <th style="width:65%">Продукт</th>
             <th style="width:24%">Вес продукта, гр.</th>
             <th style="width:11%">% от нормы</th>
 
@@ -121,6 +121,24 @@
         </tbody>
     </table>
     </div>
+
+    {% if result %}
+    <div style="background-color: {{ result[1] }};margin-left: 5%;width: 90%">
+        <p style="margin-left: 1%">Статус: {{ result[4] }}</p><br>
+        <a style="margin-left: 1%">Сума витамина К в мл.гр. - {{ result[3] }}</a><br>
+        <a style="margin-left: 1%">Процент от нормы витамина К: {{ result[2] }}%</a><br>
+        <p style="margin-left: 1%">Сумарный вес всех продуктов: {{ result[7] }}гр.</p>
+        {% if result[5] %}
+            <a style="margin-left: 1%">Продукты, которые могут усиливать действие "Варфарина"</a>
+            <ul style="background-color: #ed938e">
+            {% for item in result[6] %}
+                <li>{{ item }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+
 
     <button style="margin-left: 5%" type="submit" class="btn btn-primary" name="complete">Вернуться</button>
 

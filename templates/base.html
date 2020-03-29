@@ -13,7 +13,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
     </head>
     <body>
-        <h1>Калькулятор по расчёту витамна "K"
+        <h1>Калькулятор по расчёту витамина "K"
         {% if current_user.is_authenticated %}
             <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
         {% else %}
@@ -22,7 +22,7 @@
         {% endif %}
         </h1>
 
-        <h5><div class="p-3" style="background-color: #f0f0f0">Здоровье важнее</div></h5>
+        <h5><div class="p-3" style="background-color: #f0f0f0">“Вся твоя еда должна быть твоим лекарством!” — Гиппократ</div></h5>
         {% block content %}{% endblock %}
 
     </body>
