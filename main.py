@@ -94,7 +94,7 @@ def main():
     list_of_products_with_varfarin = list(map(lambda x: x.name, list_of_products_with_varfarin))
 
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='192.168.0.22', port=port)
+    app.run(host='0.0.0.0', port=port)
 
 
 @app.route("/")
