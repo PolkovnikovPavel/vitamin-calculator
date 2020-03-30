@@ -1,7 +1,7 @@
 NORM = 72.5
 
 
-from flask import Flask, render_template, redirect, request, abort, jsonify, make_response, url_for
+from flask import Flask, render_template, redirect, request, abort
 from data import db_session
 from data.users import User
 from data.products import Products
@@ -19,10 +19,6 @@ from flask_restful import reqparse, abort, Api
 
 import os
 import datetime
-
-
-class TimetableForm(FlaskForm):
-    submit = SubmitField('Завершить')
 
 
 class RegisterForm(FlaskForm):
@@ -127,6 +123,11 @@ def timetable_delete(id):
     else:
         abort(404)
     return redirect('/')
+
+
+@app.route('/password-change')
+def password_change():
+    return render_template("in_developing.html")
 
 
 @app.route('/timetable_duplicate/<int:id>')
@@ -663,7 +664,7 @@ def login():
 
 
 @app.route('/register', methods=['GET', 'POST'])
-def reqister():
+def register():
     form = RegisterForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
