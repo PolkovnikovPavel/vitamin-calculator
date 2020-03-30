@@ -25,7 +25,7 @@
         {% for item in values[0] %}
             <tr style="background-color: #eebef1">
             <td {% if values[3][loop.index-1] %}style="background-color: #ed938e"{% endif %}>
-                    <select id="t_1_{{ loop.index }}" name="product_1_{{ loop.index }}" style="background-color: #eebef1" class="form-control">
+                    <select id="t_1_{{ loop.index }}" name="product_1_{{ loop.index }}" style="background-color: #eebef1" class="form-control livesearch">
                     </select>
             </td>
             <td>
@@ -56,7 +56,7 @@
         {% for item in values[1] %}
             <tr style="background-color: #dcd0ff">
             <td {% if values[4][loop.index-1] %}style="background-color: #ed938e"{% endif %}>
-                    <select id="t_2_{{ loop.index }}" name="product_2_{{ loop.index }}" style="background-color: #dcd0ff" class="form-control">
+                    <select id="t_2_{{ loop.index }}" name="product_2_{{ loop.index }}" style="background-color: #dcd0ff" class="form-control livesearch">
                     </select>
             </td>
             <td>
@@ -86,7 +86,7 @@
         {% for item in values[2] %}
             <tr style="background-color: #afdafc">
             <td {% if values[5][loop.index-1] %}style="background-color: #ed938e"{% endif %}>
-                    <select id="t_3_{{ loop.index }}" name="product_3_{{ loop.index }}" style="background-color: #afdafc" class="form-control">
+                    <select id="t_3_{{ loop.index }}" name="product_3_{{ loop.index }}" style="background-color: #afdafc" class="form-control livesearch">
 
                     </select>
             </td>
@@ -105,6 +105,7 @@
     <h4 style="margin-left: 5%">Итог:</h4>
     <div style="background-color: {{ result[1] }};margin-left: 5%;width: 90%">
         <p style="margin-left: 1%">Статус: {{ result[4] }}</p><br>
+        <a style="margin-left: 1%">Суточная норма: 65-80 мл.гр.</a><br>
         <a style="margin-left: 1%">Сума витамина К в мл.гр. - {{ result[3] }}</a><br>
         <a style="margin-left: 1%">Процент от нормы витамина К: {{ result[2] }}%</a><br>
         <p style="margin-left: 1%">Сумарный вес всех продуктов: {{ result[7] }}гр.</p>
@@ -143,5 +144,12 @@ $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();
 });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.5.1/chosen.jquery.min.js"></script>
+<script type="text/javascript">
+      $(".livesearch").chosen();
+</script>
+
+
 
 {% endblock %}
