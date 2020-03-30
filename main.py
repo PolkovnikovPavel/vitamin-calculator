@@ -94,7 +94,7 @@ def main():
     list_of_products_with_varfarin = list(map(lambda x: x.name, list_of_products_with_varfarin))
 
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='127.0.0.1', port=port)
+    app.run(host='192.168.0.22', port=port)
 
 
 @app.route("/")
@@ -158,7 +158,9 @@ def duplicate_timetable(id):
         breakfast=timetable_old.breakfast,
         dinner=timetable_old.dinner,
         supper=timetable_old.supper,
-        status=timetable_old.status
+        status=timetable_old.status,
+        all_products=timetable_old.all_products,
+        all_products_varfarin=timetable_old.all_products_varfarin
     )
 
     session.add(timetable_new)

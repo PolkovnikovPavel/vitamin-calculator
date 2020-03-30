@@ -29,7 +29,7 @@
                     </select>
             </td>
             <td>
-      <input style="background-color: #eebef1" type="number" step="1" min="0" max="5000" name="count_1_{{ loop.index }}" value="{{ item[1] }}">
+      <input style="background-color: #eebef1" required type="number" step="1" min="0" max="5000" name="count_1_{{ loop.index }}" value="{{ item[1] }}">
             </td>
             </tr>
 
@@ -60,7 +60,7 @@
                     </select>
             </td>
             <td>
-      <input style="background-color: #dcd0ff" type="number" step="1" min="0" max="5000" name="count_2_{{ loop.index }}" value="{{ item[1] }}">
+      <input style="background-color: #dcd0ff" required type="number" step="1" min="0" max="5000" name="count_2_{{ loop.index }}" value="{{ item[1] }}">
             </td>
             </tr>
         {% endfor %}
@@ -91,7 +91,7 @@
                     </select>
             </td>
             <td>
-      <input style="background-color: #afdafc" type="number" step="1" min="0" max="5000" name="count_3_{{ loop.index }}" value="{{ item[1] }}">
+      <input style="background-color: #afdafc" required type="number" step="1" min="0" max="5000" name="count_3_{{ loop.index }}" value="{{ item[1] }}">
             </td>
             </tr>
         {% endfor %}
