@@ -16,7 +16,6 @@ parser_change.add_argument('name', required=False)
 parser_change.add_argument('age', required=False, type=int)
 parser_change.add_argument('password', required=True)
 parser_change.add_argument('is_varfarin', required=False)
-parser_change.add_argument('email', required=False)
 
 parser_add = reqparse.RequestParser()
 parser_add.add_argument('surname', required=True)
@@ -50,8 +49,6 @@ class UsersResource(Resource):
             user.surname = args['age']
         if args['is_varfarin']:
             user.surname = args['is_varfarin']
-        if args['email']:
-            user.surname = args['email']
 
         session.commit()
         return jsonify({'success': 'OK'})

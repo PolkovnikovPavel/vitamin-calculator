@@ -87,6 +87,7 @@ def main():
     api.add_resource(users_resource.UsersListResource, '/api/users')
 
     api.add_resource(db_resource.DBResource, '/api/db')
+    api.add_resource(db_resource.DBProducts, '/api/db/products')
 
     session = db_session.create_session()
     list_of_products = session.query(Products).filter(
@@ -640,6 +641,12 @@ def what_is_the_calculator():
 def about_the_project():
     activity(f'About the project')
     return render_template('about_the_project.html', title='О проекте')
+
+
+@app.route("/developers")
+def developers():
+    activity(f'To developers')
+    return render_template('to_developers.html', title='To developers')
 
 
 @app.route('/logout')
