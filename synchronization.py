@@ -67,7 +67,9 @@ for timetable in timetables:
             ch_ch_date=timetable['ch_ch_date'],
             color=timetable['color'],
             summ=timetable['summ'],
-            status=timetable['status']
+            status=timetable['status'],
+            all_products_varfarin=timetable['all_products_varfarin'],
+            all_products=timetable['all_products']
                         )
         session.add(timetable_db)
 

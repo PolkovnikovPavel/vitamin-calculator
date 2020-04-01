@@ -50,7 +50,7 @@
     <div class="block" style="display: inline-block;width: 30%">
 
     <a><div class="p-1" style="background-color: #d9d9d9;text-align: center">
-        Элементов: {{ values[4] }}
+        Продуктов: {{ values[4] }}
     </div></a>
     <table class="table table-sm table-inverse" style="margin-right: auto; max-width: 100%">
         <thead>
@@ -88,7 +88,7 @@
     <div class="block" style="display: inline-block;width: 30%">
 
     <a><div class="p-1" style="background-color: #d9d9d9;text-align: center">
-        Элементов: {{ values[5] }}
+        Продуктов: {{ values[5] }}
     </div></a>
     <table class="table table-sm table-inverse" style=" margin-right: auto; max-width: 100%">
         <thead>
@@ -126,10 +126,10 @@
     <h4 style="margin-left: 5%">Итог:</h4>
     <div style="background-color: {{ result[1] }};margin-left: 5%;width: 90%">
         <p style="margin-left: 1%">Статус: {{ result[4] }}</p><br>
-        <a style="margin-left: 1%">Суточная норма: 65-80 мл.гр.</a><br>
-        <a style="margin-left: 1%">Сума витамина К в мл.гр. - {{ result[3] }}</a><br>
+        <a style="margin-left: 1%">Суточная норма: 65-80 мк.гр.</a><br>
+        <a style="margin-left: 1%">Сумма витамина К в мк.гр. - {{ result[3] }}</a><br>
         <a style="margin-left: 1%">Процент от нормы витамина К: {{ result[2] }}%</a><br>
-        <p style="margin-left: 1%">Сумарный вес всех продуктов: {{ result[7] }}гр.</p>
+        <p style="margin-left: 1%">Суммарный вес всех продуктов: {{ result[7] }}гр.</p>
         {% if result[5] %}
             <a style="margin-left: 1%">Продукты, которые могут усиливать действие "Варфарина"</a>
             <ul style="background-color: #ed938e">

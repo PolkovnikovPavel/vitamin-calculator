@@ -1,12 +1,8 @@
 from requests import get, post, put, delete
 from data import db_session
-from data.products import Products
 
 
-db_session.global_init("db/vitamin_calculator.sqlite")
-session = db_session.create_session()
-all_products = session.query(Products).all()
-
-for product in all_products:
-    print(float(str(product.vitamin).replace(',', '.')))
+print(put('http://127.0.0.1:5000/api/timetable_duplicate/8',
+           json={'master': 1,
+                 'password': '1'}).json())
 

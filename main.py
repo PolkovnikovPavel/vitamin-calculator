@@ -7,7 +7,9 @@ from data.users import User
 from data.products import Products
 from data.activity import Activities
 from data.records import Timetable, set_color, set_status
-import users_resource
+import resources.db_resource as db_resource
+import resources.users_resource as users_resource
+import resources.timetable_resource as timetable_resource
 
 
 from flask_wtf import FlaskForm
@@ -76,11 +78,15 @@ def load_user(user_id):
 def main():
     global list_of_products, list_of_products_with_varfarin
     db_session.global_init("db/vitamin_calculator.sqlite")
-    # api.add_resource(users_resource.UsersListResource, '/api/v2/users')
-    # api.add_resource(users_resource.UsersResource, '/api/v2/users/<int:user_id>')
-    # api.add_resource(jobs_resource.JobsListResource, '/api/v2/jobs')
-    # api.add_resource(jobs_resource.JobsResource, '/api/v2/jobs/<int:job_id>')
-    api.add_resource(users_resource.DBResource, '/api/db')
+
+    api.add_resource(timetable_resource.TimetablesResource, '/api/timetable/<int:timetable_id>')
+    api.add_resource(timetable_resource.TimetablesDuplicate, '/api/timetable_duplicate/<int:timetable_id>')
+    api.add_resource(timetable_resource.TimetablesListResource, '/api/timetable')
+
+    api.add_resource(users_resource.UsersResource, '/api/users/<int:user_id>')
+    api.add_resource(users_resource.UsersListResource, '/api/users')
+
+    api.add_resource(db_resource.DBResource, '/api/db')
 
     session = db_session.create_session()
     list_of_products = session.query(Products).filter(
@@ -294,7 +300,7 @@ def edit_timetable(id):
         values = [result_breakfast, result_dinner, result_supper,
                   result_breakfast_varfarin, result_dinner_varfarin,
                   result_supper_varfarin]
-        products = list(map(lambda x: (f'{x.name} ({x.vitamin}мл.гр/100гр)',
+        products = list(map(lambda x: (f'{x.name} ({x.vitamin}мк.гр/100гр)',
                                        x.name in list_of_products_with_varfarin),
                             list_of_products))
         products.sort()
@@ -327,7 +333,7 @@ def edit_timetable(id):
                 break
             name = ' ('.join(data[0].split(' (')[:-1])
             vitamin = float(str(session.query(Products).filter(
-            Products.name == name).first().vitamin).replace(',', '.'))
+                Products.name == name).first().vitamin).replace(',', '.'))
 
             if name in list_of_products_with_varfarin:
                 is_varfarin = True
@@ -436,7 +442,7 @@ def edit_timetable(id):
 
         values = [result_breakfast, result_dinner, result_supper,
                   result_breakfast_varfarin, result_dinner_varfarin, result_supper_varfarin]
-        products = list(map(lambda x: (f'{x.name} ({x.vitamin}мл.гр/100гр)',
+        products = list(map(lambda x: (f'{x.name} ({x.vitamin}мк.гр/100гр)',
                                        x.name in list_of_products_with_varfarin),
                             list_of_products))
         products.sort()
@@ -518,7 +524,7 @@ def timetable_without_regist():
         values = [result_breakfast, result_dinner, result_supper,
                   result_breakfast_varfarin, result_dinner_varfarin,
                   result_supper_varfarin]
-        products = list(map(lambda x: (f'{x.name} ({x.vitamin}мл.гр/100гр)',
+        products = list(map(lambda x: (f'{x.name} ({x.vitamin}мк.гр/100гр)',
                                        x.name in list_of_products_with_varfarin),
                             list_of_products))
         products.sort()
@@ -615,7 +621,7 @@ def timetable_without_regist():
 
         values = [result_breakfast, result_dinner, result_supper,
                   result_breakfast_varfarin, result_dinner_varfarin, result_supper_varfarin]
-        products = list(map(lambda x: (f'{x.name} ({x.vitamin}мл.гр/100гр)',
+        products = list(map(lambda x: (f'{x.name} ({x.vitamin}мк.гр/100гр)',
                                        x.name in list_of_products_with_varfarin),
                             list_of_products))
         products.sort()

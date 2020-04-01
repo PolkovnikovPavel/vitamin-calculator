@@ -9,19 +9,19 @@ NORM = 72.5
 
 def set_status(percent=100):
 
-    if percent > 117.2:
+    if percent > 110.2:
         status = f'''Норма сильно превышена, опасно тем, что кровь будет очень густой, чревато тромбозами!
 Нужно уменьшить потребление витамина К на {round(percent + 0.5 - 117, 2)}%'''
-    elif percent > 110.75:
+    elif percent > 106.8:
         status = 'Количистов витамина К находится в максимальной граници нормы'
-    elif percent > 104.4:
+    elif percent > 103.4:
         status = 'Содержание витамина К близко к идеальному'
-    elif percent < 82.8:
+    elif percent < 89.8:
         status = f'''Витамин К намного меньше нормы, кровь очень жидкая, крайне опасно внутренними и другими кровотечениями!
 Необходимо увеличить потребление витамина К на {round(82.8 - percent, 2)}%'''
-    elif percent < 89.25:
+    elif percent < 93.2:
         status = 'Количество витамина К близко к минимальным значениям нормы, можно увеличить потребление продуктов с витамином К'
-    elif percent < 95.6:
+    elif percent < 96.6:
         status = 'Содержание витамина К близко к идеальному'
     else:
         status = 'Идеальное содержание витамина К'
@@ -29,13 +29,13 @@ def set_status(percent=100):
 
 
 def set_color(percent=100):
-    if percent > 117.2 or percent < 82.8:
+    if percent > 110.2 or percent < 89.8:
         col = '#e66761'
-    elif percent > 112.9 or percent < 87.1:
+    elif percent > 107.65 or percent < 92.35:
         col = '#ff9980 '
-    elif percent > 108.6 or percent < 91.4:
+    elif percent > 105.1 or percent < 94.9:
         col = '#fcf0b3'
-    elif percent > 104.3 or percent < 95.7:
+    elif percent > 102.55 or percent < 97.45:
         col = '#c9dc87'
     else:
         col = '#a7d984'
