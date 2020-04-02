@@ -8,7 +8,7 @@
 <div style="background-color: #fffaf0;margin-left: auto; margin-right: auto; max-width: 72%">
     <h4>Возможности API</h4>
 
-    <table class="table table-sm table-inverse" style="margin-left: 2%;width: 68%">
+    <table class="table table-sm table-inverse" style="margin-left: 2%;width: 75%">
   <thead>
     <tr class="table-active">
       <th style="width:50%">Действие</th>
@@ -25,17 +25,17 @@
         <tr>
             <td>Изменить пользователя</td>
             <td>put</td>
-            <td>/api/users/=>user_id<=</td>
+            <td>/api/users/&lt;user_id&gt;</td>
         </tr>
         <tr>
             <td>Удалить пользователя</td>
             <td>delete</td>
-            <td>/api/users/=>user_id<=</td>
+            <td>/api/users/&lt;user_id&gt;</td>
         </tr>
         <tr>
             <td>Получить все данные об одном пользователе</td>
             <td>get</td>
-            <td>/api/users/=>user_id<=</td>
+            <td>/api/users/&lt;user_id&gt;</td>
         </tr>
         <tr>
             <td>Получить все данные обо всех пользователях</td>
@@ -50,7 +50,7 @@
         <tr>
             <td>Получить все данные об одном расписании</td>
             <td>get</td>
-            <td>/api/timetable/=>timetable_id<=</td>
+            <td>/api/timetable/&lt;timetable_id&gt;</td>
         </tr>
         <tr>
             <td>Получить все данные обо всех расписаниях</td>
@@ -65,17 +65,17 @@
         <tr>
             <td>Измненить существующее расписание</td>
             <td>put</td>
-            <td>/api/timetable/=>timetable_id<=</td>
+            <td>/api/timetable/&lt;timetable_id&gt;</td>
         </tr>
         <tr>
             <td>Удалить существующее расписание</td>
             <td>delete</td>
-            <td>/api/timetable/=>timetable_id<=</td>
+            <td>/api/timetable/&lt;timetable_id&gt;</td>
         </tr>
         <tr>
             <td>Дублировать расписание</td>
             <td>put</td>
-            <td>/api/timetable_duplicate/=>timetable_id<=</td>
+            <td>/api/timetable_duplicate/&lt;timetable_id&gt;</td>
         </tr>
         <tr>
             <td><br></td>
@@ -98,14 +98,48 @@
         <ul>
             <li>Адрес: /api/users</li>
             <li>Метод: get</li>
-            <li>Формат ответа в json: <div style="max-width: 90%">{'users': [<br>{'age': 23, 'email': 'test@test.t', 'id': 1, 'is_varfarin': True, 'modified_date': '1990-01-25 23:59', 'name': 'Пример', 'surname': 'Примеров'},<br>{'age': 86, 'email': 'test2@test.t', 'id': 2, 'is_varfarin': False, 'modified_date': '1990-01-25 23:59', 'name': 'Пример', 'surname': 'Примеров'}<br><div style="margin-left: 6%">]}</div></div></li>
+            <li>Формат ответа в json:
+            <pre style="background-color: #ffffff;max-width: 75%;border: 1px solid #C1C1C1;"><code>{
+    "users": [
+        {
+            "age": 23,
+            "email": "test@test.t",
+            "id": 1,
+            "is_varfarin": true,
+            "modified_date": "1990-01-25 23:59",
+            "name": "Пример",
+            "surname": "Примеров"
+        },
+        {
+            "age": 40,
+            "email": "test2@test.t",
+            "id": 2,
+            "is_varfarin": false,
+            "modified_date": "1990-01-25 23:59",
+            "name": "Пример-2",
+            "surname": "Примеров"
+        }
+    ]
+}</code></pre>
+
             <li>Описание: никаких данных не надо передовать</li>
         </ul>
         <li><b>Получить все данные обо одном пользователе</b></li>
         <ul>
             <li>Адрес: /api/users/&lt;user_id&gt;</li>
             <li>Метод: get</li>
-            <li>Формат ответа в json: <div style="max-width: 90%">{'user': {<br>'age': 23, 'email': 'test@test.t', 'id': 1, 'is_varfarin': True, 'modified_date': '1990-01-25 23:59', 'name': 'Пример', 'surname': 'Примеров'<br><div style="margin-left: 6%">}}</div></div></li>
+            <li>
+            <pre style="background-color: #ffffff;max-width: 75%;border: 1px solid #C1C1C1;"><code>{
+    "user": {
+        "age": 23,
+        "email": "test@test.t",
+        "id": 1,
+        "is_varfarin": true,
+        "modified_date": "1990-01-25 23:59",
+        "name": "Пример",
+        "surname": "Примеров"
+    }
+}</code></pre></li>
             <li>Описание: никаких данных не надо передовать</li>
         </ul>
         <li><b>Создать нового пользователя</b></li>
@@ -127,14 +161,239 @@
             <li>Адрес: /api/users&lt;user_id&gt;</li>
             <li>Метод: delete</li>
             <li>Формат запроса в json: <div style="max-width: 90%">{'password': '123ghj 456'<br>}</div></li>
-            <li>Описание: Пользователь и всё, что с ним связанно исчезнут, будет проверка на совпадение паролей</li>
+            <li>Описание: Пользователь и всё, что с ним связанно удалиться, будет проверка на совпадение паролей</li>
         </ul>
         <li><b>Получить всю базу с продуктами</b></li>
         <ul>
             <li>Адрес: /api/db/products</li>
             <li>Метод: get</li>
-            <li>Формат ответа в json: <div style="max-width: 90%">{'products': [{'id': 0, 'is_varfarin': False, 'name': 'Выбрать', 'vitamin': 0.0},<br>{'id': 1, 'is_varfarin': False, 'name': 'Артишок', 'vitamin': '14,8'},<br>{'id': 2, 'is_varfarin': False, 'name': 'Артишок, вареный, с/без соли', 'vitamin': '14,8'},<br>{'id': 3, 'is_varfarin': False, 'name': 'Артишок замороженные, вареные, с солью', 'vitamin': '12,6'},<br>{'id': 4, 'is_varfarin': False, 'name': 'Базилик, свежий', 'vitamin': '414,8'}<br><div style="margin-left: 8%">]}</div></div></li>
-            <li>Описание: <b>Важно!</b> если vitamin в базе - целое число, то vitamin будет отображаться <b>0.0</b> или <b>52.0</b>, а если vitamin в базе - НЕ целое число, то vitamin будет отображаться <b>'18,5'</b> или <b>'0.3'</b> (возможно скоро будет исправленно)</li>
+            <li>Формат ответа в json:
+            <pre style="background-color: #ffffff;max-width: 75%;height: 500px;border: 1px solid #C1C1C1;overflow-y: scroll;"><code>
+{
+    "products": [
+        {
+            "id": 0,
+            "is_varfarin": false,
+            "name": "Выбрать",
+            "vitamin": 0.0
+        },
+        {
+            "id": 1,
+            "is_varfarin": false,
+            "name": "Артишок",
+            "vitamin": "14,8"
+        },
+        {
+            "id": 2,
+            "is_varfarin": false,
+            "name": "Артишок, вареный, с/без соли",
+            "vitamin": "14,8"
+        },
+        {
+            "id": 3,
+            "is_varfarin": false,
+            "name": "Артишок замороженные, вареные, с солью",
+            "vitamin": "12,6"
+        },
+        {
+            "id": 4,
+            "is_varfarin": false,
+            "name": "Базилик, свежий",
+            "vitamin": "414,8"
+        },
+        {
+            "id": 5,
+            "is_varfarin": false,
+            "name": "Базилик, сушеный",
+            "vitamin": "1714,5"
+        }
+    ]
+}</code></pre>
+            </li>
+            <li>Описание: <b>Важно!</b> если vitamin в базе - целое число, то vitamin будет отображаться <b>0.0</b> или <b>52.0</b>, а если vitamin в базе - НЕ целое число, то vitamin будет отображаться строкой <b>'18,5'</b> или <b>'0.3'</b> (возможно скоро будет исправленно)</li>
+        </ul>
+        <li><b>Получить все данные обо всех расписаниях</b></li>
+        <ul>
+            <li>Адрес: 	/api/timetable</li>
+            <li>Метод: get</li>
+            <li>Формат ответа в json:
+                <pre style="background-color: #ffffff;max-width: 75%;height: 500px;border: 1px solid #C1C1C1;overflow-y: scroll;"><code>{
+    "timetables": [
+        {
+            "all_products": "",
+            "all_products_varfarin": "",
+            "breakfast": [],
+            "ch_ch_date": "29.03.2020",
+            "color": "#e66761",
+            "date": "2020-03-29",
+            "dinner": [],
+            "id": 1,
+            "is_varfarin": false,
+            "master": 2,
+            "percent": 0,
+            "status": "Витамин К намного меньше нормы, кровь очень жидкая, крайне опасно внутренними и другими кровотечениями! Необходимо увеличить потребление витамина К на 82.8%",
+            "summ": 0,
+            "supper": [],
+            "vitamin": 0.0
+        },
+        {
+            "all_products": "Абрикосы сушеные с косточкой (урюк)(77гр - 0.0%), Гречневая каша рассыпчатая(100гр - 0.0%), Чеснок(10гр - 0.2%), Капуста белокочанная, тушеная(200гр - 0.0%), Виноград свежий(118гр - 23.8%), Анчоус европейский/атлантический, сырой(50гр - 0.1%), Сметана 10% жирности(38гр - 0.3%)",
+            "all_products_varfarin": "Чеснок",
+            "breakfast": [
+                [
+                    "Абрикосы сушеные с косточкой (урюк) (0.0мл.гр/100гр)",
+                    "77"
+                ],
+                [
+                    "Гречневая каша рассыпчатая (0.0мл.гр/100гр)",
+                    "100"
+                ],
+                [
+                    "Чеснок (1,7мл.гр/100гр)",
+                    "10"
+                ]
+            ],
+            "ch_ch_date": "30.03.2020",
+            "color": "#e66761",
+            "date": "2020-03-30",
+            "dinner": [
+                [
+                    "Капуста белокочанная, тушеная (0.0мл.гр/100гр)",
+                    "200"
+                ],
+                [
+                    "Виноград свежий (14,6мл.гр/100гр)",
+                    "118"
+                ]
+            ],
+            "id": 2,
+            "is_varfarin": true,
+            "master": 2,
+            "percent": 24.33,
+            "status": "Витамин К намного меньше нормы, кровь очень жидкая, крайне опасно внутренними и другими кровотечениями! Необходимо увеличить потребление витамина К на 58.47%",
+            "summ": 593,
+            "supper": [
+                [
+                    "Анчоус европейский/атлантический, сырой (0,1мл.гр/100гр)",
+                    "50"
+                ],
+                [
+                    "Сметана 10% жирности (0,5мл.гр/100гр)",
+                    "38"
+                ]
+            ],
+            "vitamin": 17.638
+        }
+    ]
+}</code></pre>
+            </li>
+            <li>Описание: возращает все данные обо всех расписаниях</li>
+        </ul>
+        <li><b>Получить все данные об одном расписании</b></li>
+        <ul>
+            <li>Адрес: 	/api/timetable/&lt;timetable_id&gt;</li>
+            <li>Метод: get</li>
+            <li>Формат ответа в json:
+                <pre style="background-color: #ffffff;max-width: 75%;height: 500px;border: 1px solid #C1C1C1;overflow-y: scroll;"><code>{
+    "timetable": {
+        "all_products": "Абрикосы сушеные с косточкой (урюк)(77гр - 0.0%), Гречневая каша рассыпчатая(100гр - 0.0%), Чеснок(10гр - 0.2%), Капуста белокочанная, тушеная(200гр - 0.0%), Виноград свежий(118гр - 23.8%), Анчоус европейский/атлантический, сырой(50гр - 0.1%), Сметана 10% жирности(38гр - 0.3%)",
+        "all_products_varfarin": "Чеснок",
+        "breakfast": [
+            [
+                "Абрикосы сушеные с косточкой (урюк) (0.0мл.гр/100гр)",
+                "77"
+            ],
+            [
+                "Гречневая каша рассыпчатая (0.0мл.гр/100гр)",
+                "100"
+            ],
+            [
+                "Чеснок (1,7мл.гр/100гр)",
+                "10"
+            ]
+        ],
+        "ch_ch_date": "30.03.2020",
+        "color": "#e66761",
+        "date": "2020-03-30",
+        "dinner": [
+            [
+                "Капуста белокочанная, тушеная (0.0мл.гр/100гр)",
+                "200"
+            ],
+            [
+                "Виноград свежий (14,6мл.гр/100гр)",
+                "118"
+            ]
+        ],
+        "id": 2,
+        "is_varfarin": true,
+        "master": 2,
+        "percent": 24.33,
+        "status": "Витамин К намного меньше нормы, кровь очень жидкая, крайне опасно внутренними и другими кровотечениями!\nНеобходимо увеличить потребление витамина К на 58.47%",
+        "summ": 593,
+        "supper": [
+            [
+                "Анчоус европейский/атлантический, сырой (0,1мл.гр/100гр)",
+                "50"
+            ],
+            [
+                "Сметана 10% жирности (0,5мл.гр/100гр)",
+                "38"
+            ]
+        ],
+        "vitamin": 17.638
+    }
+}</code></pre>
+            </li>
+            <li>Описание: возращает все данные обо всех расписаниях</li>
+        </ul>
+        <li><a name="cnt"></a><b>Создать новое расписание</b></li>
+        <ul>
+            <li>Адрес: 	/api/timetable</li>
+            <li>Метод: post</li>
+            <li>Формат запроса в json:
+                <pre style="background-color: #ffffff;max-width: 75%;border: 1px solid #C1C1C1;"><code>{
+    "breakfast": '[["Гречневая каша рассыпчатая (0.0мл.гр/100гр)", "25"],["Чеснок (1,7мл.гр/100гр)", "15"]]',
+    "date": '2020-03-30',
+    "dinner": '[["Абрикосы сушеные с косточкой (урюк) (0.0мл.гр/100гр)", "777"]]',
+    "master": 1,
+    "password": '3847gohj-Fm',
+    "supper": '[["Гречневая каша рассыпчатая (0.0мл.гр/100гр)", "300"]]'
+}</code></pre>
+            </li>
+            <li>Описание: <b>Важно!</b> В breakfast, dinner, supper надо передать строку, в нутри которой должен быть список в формате json, вида:
+                <br>[['название (внутри что угодно кроме скобок)', вес продукта], ['название (внутри что угодно кроме скобок)', вес продукта]]
+                <br>обязательно в названии продукта в конце далжны быть круглые скобки, вес должен быть целым числом, может быть в виде строки</li>
+        </ul>
+        <li><b>Изменить существующее расписание</b></li>
+        <ul>
+            <li>Адрес: 	/api/timetable/&lt;timetable_id&gt;</li>
+            <li>Метод: put</li>
+            <li>Формат запроса в json:
+                <pre style="background-color: #ffffff;max-width: 75%;border: 1px solid #C1C1C1;"><code>{
+    "breakfast": '[["Гречневая каша рассыпчатая (0.0мл.гр/100гр)", "25"],["Чеснок (1,7мл.гр/100гр)", "15"]]',
+    "date": '2020-03-30',
+    "dinner": '[["Абрикосы сушеные с косточкой (урюк) (0.0мл.гр/100гр)", "777"]]',
+    "master": 1,
+    "password": '3847gohj-Fm',
+    "supper": '[["Гречневая каша рассыпчатая (0.0мл.гр/100гр)", "300"]]'
+}</code></pre>
+            </li>
+            <li>Описание: Работает как добавление <a href="#cnt">расписания</a></ul>
+        <li><b>Удалить существующее расписание</b></li>
+        <ul>
+            <li>Адрес: /api/timetable&lt;timetable_id&gt;</li>
+            <li>Метод: delete</li>
+            <li>Формат запроса в json: <div style="max-width: 90%">{'password': '123ghj 456', 'master': &lt;user_id&gt;<br>}</div></li>
+            <li>Описание: Надо передать master выбраного расписания и пароль от master</li>
+        </ul>
+        <li><b>Дублмровать существующее расписание</b></li>
+        <ul>
+            <li>Адрес: /api/timetable_duplicate&lt;timetable_id&gt;</li>
+            <li>Метод: put</li>
+            <li>Формат запроса в json: <div style="max-width: 90%">{'password': '123ghj 456', 'master': &lt;user_id&gt;<br>}</div></li>
+            <li>Описание: Надо передать master выбраного расписания и пароль от master,
+                <br>полностью копирует выбраное расписание с новой датой</li>
         </ul>
         </ul>
 
