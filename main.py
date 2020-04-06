@@ -10,6 +10,7 @@ from data.records import Timetable, set_color, set_status
 import resources.db_resource as db_resource
 import resources.users_resource as users_resource
 import resources.timetable_resource as timetable_resource
+import interrupt
 
 
 from flask_wtf import FlaskForm
@@ -97,6 +98,7 @@ def main():
     list_of_products_with_varfarin = list(map(lambda x: x.name, list_of_products_with_varfarin))
 
     port = int(os.environ.get("PORT", 5000))
+    interrupt.interrupt()   # для мониторинга сайта, чтоб не усыпал
     app.run(host='0.0.0.0', port=port)
 
 
@@ -408,10 +410,13 @@ def edit_timetable(id):
         color = set_color(percent)
         status = set_status(percent)
 
+        mno = request.form['mno']
+        varfarin = request.form['varf']
+
         date = request.form['date']
         if date == '':
             date = datetime.datetime.now()
-            date = f'{date.year}-{str(date.month).rjust(2, "0")}-{date.day}'
+            date = f'{date.year}-{str(date.month).rjust(2, "0")}-{str(date.day).rjust(2, "0")}'
         ch_ch_date = get_ch_ch_date(date)
 
         timetable.date = date
@@ -427,6 +432,8 @@ def edit_timetable(id):
         timetable.supper = result_supper
         timetable.all_products = ', '.join(all_products)
         timetable.all_products_varfarin = ',  '.join(list_of_prod_varf)
+        timetable.mno = mno
+        timetable.varfarin = varfarin
 
         session.commit()
 
@@ -483,7 +490,9 @@ def add_timetable():
         dinner=[],
         supper=[],
         all_products='Не выбрано',
-        all_products_varfarin=''
+        all_products_varfarin='',
+        mno='0',
+        varfarin='0'
     )
 
     session.add(timetable)
@@ -647,6 +656,11 @@ def about_the_project():
 def developers():
     activity(f'To developers')
     return render_template('to_developers.html', title='To developers')
+
+
+@app.route("/monitoring")
+def monitoring():
+    return render_template("in_developing.html")
 
 
 @app.route('/logout')
