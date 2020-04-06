@@ -11,4 +11,4 @@ def interrupt():
     except:
         print(f'ошибка в подключении по адресу {way}')
 
-    threading.Timer(1, interrupt).start()   # запуск каждые 20 минут
+    threading.Timer(1200, interrupt).start()   # запуск каждые 20 минут

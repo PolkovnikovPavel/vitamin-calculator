@@ -7,40 +7,17 @@ from data.users import User
 from data.products import Products
 from data.activity import Activities
 from data.records import Timetable, set_color, set_status
+from data.forms import RegisterForm, LoginForm
 import resources.db_resource as db_resource
 import resources.users_resource as users_resource
 import resources.timetable_resource as timetable_resource
 import interrupt
 
-
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DecimalField, BooleanField
-from wtforms.validators import DataRequired, NumberRange
-from wtforms.fields.html5 import EmailField
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 from flask_restful import reqparse, abort, Api
 
 import os
 import datetime
-
-
-class RegisterForm(FlaskForm):
-    name = StringField('Имя пользователя', validators=[DataRequired()])
-    surname = StringField('фамилия пользователя', validators=[DataRequired()])
-    age = DecimalField('возраст', validators=[
-        NumberRange(min=16, max=199, message='Должно быть записанно цифрами от 16 до 199')])
-    email = EmailField('Почта', validators=[DataRequired()])
-    is_varfarin = BooleanField('Вы принимаете Варфарин')
-    password = PasswordField('Пароль', validators=[DataRequired()])
-    password_again = PasswordField('Повторите пароль', validators=[DataRequired()])
-    submit = SubmitField('Продолжить')
-
-
-class LoginForm(FlaskForm):
-    email = EmailField('Почта', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
-    remember_me = BooleanField('Запомнить меня')
-    submit = SubmitField('Войти')
 
 
 def get_ch_ch_date(date):
@@ -346,7 +323,7 @@ def edit_timetable(id):
                 result_breakfast_varfarin.append(False)
 
             result_breakfast.append(data)
-            all_products.append(f"{name}({data[1]}гр - {round(vitamin*int(data[1])/NORM, 1)}%)")
+            all_products.append(f"{name}({data[1]}гр - {round(vitamin*int(data[1])/100, 1)}мк.г)")
             summ += int(data[1])
 
         for i in range(1, 101):
@@ -368,7 +345,7 @@ def edit_timetable(id):
                 result_dinner_varfarin.append(False)
 
             result_dinner.append(data)
-            all_products.append(f"{name}({data[1]}гр - {round(vitamin*int(data[1])/NORM, 1)}%)")
+            all_products.append(f"{name}({data[1]}гр - {round(vitamin*int(data[1])/100, 1)}мк.г)")
             summ += int(data[1])
 
         for i in range(1, 101):
@@ -390,7 +367,7 @@ def edit_timetable(id):
                 result_supper_varfarin.append(False)
 
             result_supper.append(data)
-            all_products.append(f"{name}({data[1]}гр - {round(vitamin*int(data[1])/NORM, 1)}%)")
+            all_products.append(f"{name}({data[1]}гр - {round(vitamin*int(data[1])/100, 1)}мк.г)")
             summ += int(data[1])
 
         vitamin = sum(map(lambda x: float(str(session.query(Products).filter(

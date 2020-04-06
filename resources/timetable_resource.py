@@ -246,7 +246,7 @@ def get_all_data(breakfast, dinner, supper):
 
         result_breakfast.append(data)
         all_products.append(
-            f"{' ('.join(data[0].split(' (')[:-1])}({data[1]}гр - {round(vitamin * int(data[1]) / NORM, 1)}%)")
+            f"{' ('.join(data[0].split(' (')[:-1])}({data[1]}гр - {round(vitamin * int(data[1]) / 100, 1)}мк.г)")
         summ += int(data[1])
 
     for i in range(len(dinner)):
@@ -270,7 +270,7 @@ def get_all_data(breakfast, dinner, supper):
 
         result_dinner.append(data)
         all_products.append(
-            f"{' ('.join(data[0].split(' (')[:-1])}({data[1]}гр - {round(vitamin * int(data[1]) / NORM, 1)}%)")
+            f"{' ('.join(data[0].split(' (')[:-1])}({data[1]}гр - {round(vitamin * int(data[1]) / 100, 1)}мк.г)")
         summ += int(data[1])
 
     for i in range(len(supper)):
@@ -294,7 +294,7 @@ def get_all_data(breakfast, dinner, supper):
 
         result_supper.append(data)
         all_products.append(
-            f"{' ('.join(data[0].split(' (')[:-1])}({data[1]}гр - {round(vitamin * int(data[1]) / NORM, 1)}%)")
+            f"{' ('.join(data[0].split(' (')[:-1])}({data[1]}гр - {round(vitamin * int(data[1]) / 100, 1)}мк.г)")
         summ += int(data[1])
 
     vitamin = sum(map(lambda x: float(str(session.query(Products).filter(
