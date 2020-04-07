@@ -5,7 +5,6 @@ from data.activity import Activities
 
 way = 'https://vitamin-calculator.herokuapp.com/monitoring'
 
-
 def interrupt():
     try:
         x = get(way)
@@ -22,3 +21,7 @@ def interrupt():
         session.commit()
 
     threading.Timer(1200, interrupt).start()   # запуск каждые 20 минут
+
+
+def start_interrupt():
+    threading.Timer(1200, interrupt).start()  # запуск interrupt через 20 минут
