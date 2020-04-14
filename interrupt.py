@@ -1,26 +1,28 @@
 import threading
+
 from requests import get
+
 from data import db_session
 from data.activity import Activities
 
 way = 'https://vitamin-calculator.herokuapp.com/monitoring'
 
-def interrupt():
+
+def interrupt():  # это сделаное, чтоб сервер не усыпал
     try:
-        x = get(way)
+        x = get(way)  # благодаря этому запросу создаётся видимость активности
         print(x)
     except:
         session = db_session.create_session()
-        user = 0
 
         active = Activities(
             name=f'ERROR IN REQUEST ON {way}',
-            id_user=user
+            id_user=0
         )
-        session.add(active)
+        session.add(active)  # сохранить факт ошибки
         session.commit()
 
-    threading.Timer(1200, interrupt).start()   # запуск каждые 20 минут
+    threading.Timer(1200, interrupt).start()  # запуск каждые 20 минут
 
 
 def start_interrupt():

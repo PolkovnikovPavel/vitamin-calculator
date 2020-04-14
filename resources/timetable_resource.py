@@ -7,7 +7,7 @@ from data.products import Products
 import json
 import datetime
 
-NORM = 72.5
+NORM = 72.5   # норма
 
 
 def get_ch_ch_date(date):
@@ -42,13 +42,13 @@ parser_add.add_argument('master', required=True, type=int)
 
 
 class TimetablesResource(Resource):
-    def get(self, timetable_id):
+    def get(self, timetable_id):   # получить один
         abort_if_timetable_not_found(timetable_id)
         session = db_session.create_session()
         timetable = session.query(Timetable).get(timetable_id)
         return jsonify({'timetable': timetable.to_dict(only=(list_of_parameters_timetable))})
 
-    def put(self, timetable_id):
+    def put(self, timetable_id):   # изменить
         args = parser_change.parse_args()
         abort_if_timetable_not_found(timetable_id)
         if not check_password(args['master'], args['password']):
@@ -80,7 +80,7 @@ class TimetablesResource(Resource):
         session.commit()
         return jsonify({'success': 'OK'})
 
-    def delete(self, timetable_id):
+    def delete(self, timetable_id):   # удалить
         args = parser_delete.parse_args()
         abort_if_timetable_not_found(timetable_id)
         if not check_password(args['master'], args['password']):
@@ -95,13 +95,13 @@ class TimetablesResource(Resource):
 
 
 class TimetablesListResource(Resource):
-    def get(self):
+    def get(self):   # получить все расписания
         session = db_session.create_session()
         timetables = session.query(Timetable).all()
         return jsonify({'timetables': [timetable.to_dict(
             only=(list_of_parameters_timetable)) for timetable in timetables]})
 
-    def post(self):
+    def post(self):   # создать новое расписание
         args = parser_add.parse_args()
 
         if not check_password(args['master'], args['password']):
@@ -132,7 +132,7 @@ class TimetablesListResource(Resource):
         return jsonify({'success': 'OK'})
 
 
-class TimetablesDuplicate(Resource):
+class TimetablesDuplicate(Resource):   # отдельно для дублирования
     def put(self, timetable_id):
         args = parser_delete.parse_args()
 
@@ -172,7 +172,7 @@ class TimetablesDuplicate(Resource):
         return jsonify({'success': 'OK'})
 
 
-def abort_if_user_not_found(user_id):
+def abort_if_user_not_found(user_id):   # проверка на наличие user
     session = db_session.create_session()
     users = session.query(User).get(user_id)
     if not users:
@@ -180,13 +180,14 @@ def abort_if_user_not_found(user_id):
 
 
 def abort_if_timetable_not_found(timetable_id):
+    # проверка на наличие timetable
     session = db_session.create_session()
     timetable = session.query(Timetable).get(timetable_id)
     if not timetable:
         abort(404, message=f"Timetable {timetable_id} not found")
 
 
-def check_password(user_id, password):
+def check_password(user_id, password):   # проверяет пароль
     session = db_session.create_session()
     user = session.query(User).get(user_id)
     if user:
@@ -194,7 +195,7 @@ def check_password(user_id, password):
     abort(404, message=f"User {user_id} not found")
 
 
-def is_json(string):
+def is_json(string):   # проверка на то что строка является json
     try:
         json_object = json.loads(string)
     except ValueError:
@@ -203,6 +204,17 @@ def is_json(string):
 
 
 def get_all_data(breakfast, dinner, supper):
+    """
+    :param breakfast: json
+    :param dinner: json
+    :param supper: json
+
+    :return: breakfast, dinner, supper, vitamin, percent, is_varfarin, summ,
+            all_products, list_of_prod_varf
+
+    принимает список для завтрака, обеда и ужина, и обробатывает их
+    """
+
     is_json(breakfast)
     is_json(dinner)
     is_json(supper)

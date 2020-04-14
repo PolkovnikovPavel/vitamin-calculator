@@ -5,8 +5,10 @@ from data.activity import Activities
 from data.records import Timetable
 import datetime
 
+# для того, чтобы скопировать всё базу в интернете
 
-def pars_str_to_date(date_str):
+
+def pars_str_to_date(date_str):   # переделывает строк в даты в дату
     days, time = date_str.split(' ')
     year, month, day = days.split('-')
     hours, minutes = time.split(':')
@@ -16,12 +18,12 @@ def pars_str_to_date(date_str):
     return date
 
 
-way = 'https://vitamin-calculator.herokuapp.com/'
-db_session.global_init("db/vitamin_calculator.sqlite")
+way = 'https://vitamin-calculator.herokuapp.com/'   # от куда брать
+db_session.global_init("db/vitamin_calculator.sqlite")   # где хранить
 session = db_session.create_session()
 
 
-all_db = get(f'{way}/api/db').json()
+all_db = get(f'{way}/api/db').json()   # обращается к api и получает всю базу
 
 users = all_db['db']['users']
 timetables = all_db['db']['timetable']

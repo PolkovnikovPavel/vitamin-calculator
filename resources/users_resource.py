@@ -3,9 +3,6 @@ from flask import jsonify
 from data import db_session
 from data.users import User
 from data.records import Timetable
-from data.activity import Activities
-
-import os
 
 list_of_parameters_users = ['name', 'surname', 'age', 'id', 'is_varfarin',
                             'email', 'modified_date']
@@ -27,13 +24,13 @@ parser_add.add_argument('email', required=True)
 
 
 class UsersResource(Resource):
-    def get(self, user_id):
+    def get(self, user_id):   # получить один
         abort_if_user_not_found(user_id)
         session = db_session.create_session()
         user = session.query(User).get(user_id)
         return jsonify({'user': user.to_dict(only=(list_of_parameters_users))})
 
-    def put(self, user_id):
+    def put(self, user_id):   # изменить, нужен пароль
         args = parser_change.parse_args()
         if not check_password(user_id, args['password']):
             abort(404, message=f"incorrect password")
@@ -53,7 +50,7 @@ class UsersResource(Resource):
         session.commit()
         return jsonify({'success': 'OK'})
 
-    def delete(self, user_id):
+    def delete(self, user_id):   # удалить, нужен пароль
         args = parser_change.parse_args()
         if not check_password(user_id, args['password']):
             abort(404, message=f"incorrect password")
@@ -72,13 +69,13 @@ class UsersResource(Resource):
 
 
 class UsersListResource(Resource):
-    def get(self):
+    def get(self):   # получить всех пользователей
         session = db_session.create_session()
         users = session.query(User).all()
         return jsonify({'users': [user.to_dict(
             only=(list_of_parameters_users)) for user in users]})
 
-    def post(self):
+    def post(self):   # создать нового
         args = parser_add.parse_args()
         session = db_session.create_session()
         if session.query(User).filter(User.email == args['email']).first():
@@ -97,14 +94,14 @@ class UsersListResource(Resource):
         return jsonify({'success': 'OK'})
 
 
-def abort_if_user_not_found(user_id):
+def abort_if_user_not_found(user_id):   # проверка на наличие user
     session = db_session.create_session()
     users = session.query(User).get(user_id)
     if not users:
         abort(404, message=f"User {user_id} not found")
 
 
-def check_password(user_id, password):
+def check_password(user_id, password):   # проверяет пароль
     session = db_session.create_session()
     user = session.query(User).get(user_id)
     if user:

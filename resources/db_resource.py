@@ -10,7 +10,7 @@ from data.products import Products
 list_of_parameters_products = ['id', 'name', 'vitamin', 'is_varfarin']
 
 
-class DBResource(Resource):
+class DBResource(Resource):   # для отдачи пользователей, расписаний и актив.
     def get(self):
         session = db_session.create_session()
         users = session.query(User).all()
@@ -22,7 +22,7 @@ class DBResource(Resource):
                                'activities': [activity.to_dict() for activity in activities]}})
 
 
-class DBProducts(Resource):
+class DBProducts(Resource):   # для отдачи всех продуктов
     def get(self):
         session = db_session.create_session()
         products = session.query(Products).all()

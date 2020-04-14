@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, NumberRange
 from wtforms.fields.html5 import EmailField
 
 
-class RegisterForm(FlaskForm):
+class RegisterForm(FlaskForm):   # форма регистрации
     name = StringField('Имя пользователя', validators=[DataRequired()])
     surname = StringField('фамилия пользователя', validators=[DataRequired()])
     age = DecimalField('возраст', validators=[
@@ -16,7 +16,7 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Продолжить')
 
 
-class LoginForm(FlaskForm):
+class LoginForm(FlaskForm):   # форма авторизации
     email = EmailField('Почта', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     remember_me = BooleanField('Запомнить меня')
