@@ -3,6 +3,7 @@ from data import db_session
 from data.users import User
 from data.products import Products
 from data.activity import Activities
+from data.activity import activity
 from data.records import Timetable, set_color, set_status
 from data.forms import RegisterForm, LoginForm
 import resources.db_resource as db_resource
@@ -725,21 +726,6 @@ def register():
         activity(f'new register email"{form.email.data}" name="{form.name.data} {form.surname.data}"')
         return redirect('/')   # возврат на главное меню
     return render_template('register.html', title='Регистрация', form=form)
-
-
-def activity(name=''):   # создаёт новую запись в активности
-    session = db_session.create_session()
-    if current_user.is_authenticated:   # кто сделал это действие
-        user = current_user.id
-    else:
-        user = 0
-
-    active = Activities(
-        name=name,
-        id_user=user
-    )
-    session.add(active)
-    session.commit()
 
 
 if __name__ == '__main__':
