@@ -3,13 +3,14 @@ import threading
 from requests import get
 
 from data import db_session
-from data.activity import Activities
+from data.activity import Activities, activity
 
 way = 'https://vitamin-calculator.herokuapp.com/monitoring'
 
 
 def interrupt():  # это сделаное, чтоб сервер не усыпал
     try:
+        activity('monitoring!')
         x = get(way)  # благодаря этому запросу создаётся видимость активности
         print(x)
     except:
