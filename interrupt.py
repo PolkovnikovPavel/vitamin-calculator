@@ -10,6 +10,7 @@ way = 'https://vitamin-calculator.herokuapp.com/monitoring'
 
 def interrupt():  # это сделаное, чтоб сервер не усыпал
     try:
+        x = get(way)  # благодаря этому запросу создаётся видимость активности
         session = db_session.create_session()
 
         active = Activities(
@@ -18,7 +19,6 @@ def interrupt():  # это сделаное, чтоб сервер не усып
         )
         session.add(active)  # сохранить факт ошибки
         session.commit()
-        x = get(way)  # благодаря этому запросу создаётся видимость активности
     except:
         session = db_session.create_session()
 
