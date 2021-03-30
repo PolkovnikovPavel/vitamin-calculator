@@ -10,7 +10,7 @@ import resources.db_resource as db_resource
 import resources.users_resource as users_resource
 import resources.timetable_resource as timetable_resource
 import interrupt
-
+start_interrupt
 from flask_login import LoginManager, login_user, current_user, login_required
 from flask_login import logout_user
 from flask_restful import abort, Api
@@ -79,7 +79,7 @@ def main():
             lambda x: x.name, list_of_products_with_varfarin))
 
     port = int(os.environ.get("PORT", 5000))
-    interrupt.start_interrupt()   # для мониторинга сайта, чтоб не усыпал
+    #interrupt.start_interrupt()   # для мониторинга сайта, чтоб не усыпал
     app.run(host='0.0.0.0', port=port)
 
 
