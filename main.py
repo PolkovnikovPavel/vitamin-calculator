@@ -10,7 +10,6 @@ import resources.db_resource as db_resource
 import resources.users_resource as users_resource
 import resources.timetable_resource as timetable_resource
 import interrupt
-start_interrupt
 from flask_login import LoginManager, login_user, current_user, login_required
 from flask_login import logout_user
 from flask_restful import abort, Api
