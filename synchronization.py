@@ -19,7 +19,7 @@ def pars_str_to_date(date_str):   # переделывает строк в да�
 
 
 way = 'https://vitamin-calculator.herokuapp.com/'   # от куда брать
-db_session.global_init("db/vitamin_calculator.sqlite")   # где хранить
+db_session.global_init("db/vitamin_calculator2.sqlite")   # где хранить
 session = db_session.create_session()
 
 

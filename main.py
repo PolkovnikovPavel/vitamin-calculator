@@ -40,7 +40,7 @@ def get_num_of_day(date):   # нужно для  сортировки по да�
 
 
 app = Flask(__name__)
-app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=1)
+app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=7)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 api = Api(app)
 
@@ -77,7 +77,7 @@ def main():
     list_of_products_with_varfarin = list(map(
             lambda x: x.name, list_of_products_with_varfarin))
 
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 80))
     #interrupt.start_interrupt()   # для мониторинга сайта, чтоб не усыпал
     app.run(host='0.0.0.0', port=port)
 
